@@ -9,8 +9,8 @@ public sealed class MovementInputController : InputController, IDisposable
     private readonly InputAction _positionInput;
     private readonly MovementInputData _movementData;
 
-    private bool _deltaInputExecuted;
-    private bool _positionInputExecuted;
+    private Vector2 _lastInputDelta;
+    private int _positionInputExecuteCount;
 
     public MovementInputController(InputAction deltaInput, InputAction positionInput, MovementInputData movementData) 
     {
@@ -27,64 +27,71 @@ public sealed class MovementInputController : InputController, IDisposable
 
     protected override void OnEnable()
     {
-        _deltaInput.started += OnDeltaInputPerformed;
-        _deltaInput.performed += OnDeltaInputPerformed;
-        _deltaInput.canceled += OnDeltaInputCanceled;
+        _deltaInput.started += StartDeltaInput;
+        _deltaInput.canceled += CancelDeltaInput;
         _deltaInput.Enable();
 
-        _positionInput.started += OnPositionInputPerformed;
-        _positionInput.performed += OnPositionInputPerformed;
-        _positionInput.canceled += OnPositionInputCanceled;
+        _positionInput.started += StartPositionInput;
+        _positionInput.canceled += CancelPositionInput;
+        _positionInput.performed += PerformPositionInput;
         _positionInput.Enable();
     }
 
     protected override void OnDisable()
     {
-        _deltaInput.started -= OnDeltaInputPerformed;
-        _deltaInput.performed -= OnDeltaInputPerformed;
-        _deltaInput.canceled -= OnDeltaInputCanceled;
+        _deltaInput.started -= StartDeltaInput;
+        _deltaInput.canceled -= CancelDeltaInput;
         _deltaInput.Disable();
 
-        _positionInput.started -= OnPositionInputPerformed;
-        _positionInput.performed -= OnPositionInputPerformed;
-        _positionInput.canceled -= OnPositionInputCanceled;
+        _positionInput.started -= StartPositionInput;
+        _positionInput.canceled -= CancelPositionInput;
+        _positionInput.performed -= PerformPositionInput;
         _positionInput.Disable();
     }
 
-    private void OnDeltaInputPerformed(InputAction.CallbackContext callback)
+    private void StartDeltaInput(InputAction.CallbackContext callback)
     {
-        if (PredicateManager.Result() is false) return;
-
-        _deltaInputExecuted = true;
-        _movementData.OnDeltaChanged(callback.ReadValue<Vector2>());
-        TryChangeMovement();
-    }
-
-    private void OnDeltaInputCanceled(InputAction.CallbackContext callback)
-    {
-        _deltaInputExecuted = false;
-        _movementData.OnDeltaChanged(Vector2.zero);
-    }
-
-    private void OnPositionInputPerformed(InputAction.CallbackContext callback)
-    {
-        if (PredicateManager.Result() is false) return;
-
-        _positionInputExecuted = true;
-        _movementData.OnPositionChanged(callback.ReadValue<Vector2>());
-        TryChangeMovement();
-    }
-
-    private void OnPositionInputCanceled(InputAction.CallbackContext callback)
-    {
-        _positionInputExecuted = false;
-    }
-
-    private void TryChangeMovement()
-    {
-        if (_deltaInputExecuted && _positionInputExecuted)
+        if (PredicateManager.Result())
         {
-            _movementData.OnMovementChanged(_movementData.Delta, _movementData.Position);
+            _movementData.OnDeltaChanged(callback.ReadValue<Vector2>());
+            _lastInputDelta = _movementData.Delta;
         }
+    }
+
+    private void CancelDeltaInput(InputAction.CallbackContext callback)
+    {
+        if (_movementData.Delta != Vector2.zero)
+        {
+            _movementData.OnDeltaChanged(Vector2.zero);
+        }
+    }
+
+    private void StartPositionInput(InputAction.CallbackContext callback)
+    {
+        if (PredicateManager.Result())
+        {
+            _movementData.OnPositionChanged(callback.ReadValue<Vector2>());
+        }
+
+        _positionInputExecuteCount = 1;
+    }
+
+    private void CancelPositionInput(InputAction.CallbackContext callback)
+    {
+        if (_movementData.Position != Vector2.zero)
+        {
+            _movementData.OnPositionChanged(Vector2.zero);
+        }
+    }
+
+    private void PerformPositionInput(InputAction.CallbackContext callback)
+    {
+        if (_positionInputExecuteCount > 1 && PredicateManager.Result())
+        {
+            _movementData.OnPositionChanged(callback.ReadValue<Vector2>());
+            _movementData.OnMovementChanged(_lastInputDelta, _movementData.Position);
+        }
+
+        _positionInputExecuteCount++;
     }
 }}
