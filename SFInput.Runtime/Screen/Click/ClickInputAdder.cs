@@ -5,7 +5,7 @@ public abstract class ClickInputAdder : InputAdder<ClickInputController, ClickIn
 {
     [SerializeField]
     private InputManager<MovementInputData> _movementManager;
-    public IInputManager<MovementInputData> MovementManager { get => _movementManager; }
+    public InputManager<MovementInputData> MovementManager { get => _movementManager; }
 
     protected override void OnDestroy()
     {

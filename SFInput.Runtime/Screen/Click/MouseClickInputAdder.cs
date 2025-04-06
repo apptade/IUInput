@@ -17,10 +17,9 @@ public sealed class MouseClickInputAdder : ClickInputAdder
 
     protected override IReadOnlyDictionary<int, ClickInputController> GetControllers()
     {
-        var length = _clickInputs.Length;
-        var dictionary = new Dictionary<int, ClickInputController>(length);
+        var dictionary = new Dictionary<int, ClickInputController>(_clickInputs.Length);
 
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < _clickInputs.Length; i++)
         {
             dictionary.Add(i, new(_clickInputs[i], MovementManager.DataManager.Data[0], AddableManager.DataManager.Data[i]));
         }

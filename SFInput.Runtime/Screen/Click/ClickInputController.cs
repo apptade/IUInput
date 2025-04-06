@@ -9,12 +9,11 @@ public sealed class ClickInputController : InputController, IDisposable
     private readonly InputAction _clickInput;
     private readonly MovementInputData _movementData;
 
-    private bool _clickedDown;
     private int _multipleClickCount;
     private float _multipleClickTimer;
-    private float _staticPressTime;
+    private bool _staticHoldLocked;
 
-    public float MaxMultipleClickTime { get; set; } = 0.25f;
+    public float MaxMultipleClickDuration { get; set; } = 0.25f;
 
     public ClickInputController(InputAction clickInput, MovementInputData movementData, ClickInputData clickData)
     {
@@ -30,73 +29,114 @@ public sealed class ClickInputController : InputController, IDisposable
 
     protected override void OnEnable()
     {
-        _clickInput.started += OnClickInputStarted;
-        _clickInput.canceled += OnClickInputCanceled;
+        _movementData.DeltaChanged += ChangeMovementDelta;
+        _movementData.PositionChanged += ChangeMovementPosition;
+        _movementData.MovementChanged += ChangeMovement;
+
+        _clickInput.performed += PerformClickInput;
+        _clickInput.canceled += CancelClickInput;
         _clickInput.Enable();
     }
 
     protected override void OnDisable()
     {
-        _clickInput.started -= OnClickInputStarted;
-        _clickInput.canceled -= OnClickInputCanceled;
+        _movementData.DeltaChanged -= ChangeMovementDelta;
+        _movementData.PositionChanged -= ChangeMovementPosition;
+        _movementData.MovementChanged -= ChangeMovement;
+
+        _clickInput.performed -= PerformClickInput;
+        _clickInput.canceled -= CancelClickInput;
         _clickInput.Disable();
     }
 
-    private void OnClickInputStarted(InputAction.CallbackContext callback)
+    private void ChangeMovementDelta(Vector2 delta)
     {
-        if (PredicateManager.Result() is false) return;
-
-        _clickData.OnClickDownChanged(_movementData.Position);
-        _clickedDown = true;
+        if (_clickData.Pressed)
+        {
+            _clickData.OnClickDeltaChanged(delta);
+        }
     }
 
-    private void OnClickInputCanceled(InputAction.CallbackContext callback)
+    private void ChangeMovementPosition(Vector2 position)
     {
-        if (_clickedDown is false) return;
+        if (_clickData.Pressed)
+        {
+            _clickData.OnClickPositionChanged(position);
+        }
+    }
+
+    private void ChangeMovement(Vector2 delta, Vector2 position)
+    {
+        if (_clickData.Pressed)
+        {
+            _clickData.OnClickMovementChanged(delta, position);
+        }
+    }
+
+    private void PerformClickInput(InputAction.CallbackContext callback)
+    {
+        if (PredicateManager.Result())
+        {
+            _clickData.OnClickDownChanged(_movementData.Position);
+            ChangeMovementPosition(_movementData.Position);
+        }
+    }
+
+    private void CancelClickInput(InputAction.CallbackContext callback)
+    {
+        if (_clickData.Pressed is false) return;
 
         _clickData.OnClickUpChanged(_movementData.Position);
-        _clickedDown = false;
 
-        var distance = Vector2.Distance(_clickData.ClickDownPosition, _clickData.ClickUpPosition);
-        if (distance < 3)
+        if (IsVectorsMatch(_clickData.ClickDownPosition, _clickData.ClickUpPosition))
         {
             _multipleClickTimer = 0;
-            _clickData.OnClickChanged(_movementData.Position, _multipleClickCount++);
+            _clickData.OnStaticClickChanged(_movementData.Position, _multipleClickCount++);
         }
 
-        _staticPressTime = 0;
-        _clickData.OnStaticPressTimeChanged(time:0);
+        _staticHoldLocked = false;
+        _clickData.OnStaticHoldTimeChanged(0);
+        _clickData.OnClickDeltaChanged(Vector2.zero);
+        _clickData.OnClickPositionChanged(Vector2.zero);
     }
 
     public void FixedUpdate()
     {
-        UpdateMultipleClick();
-        UpdateStaticPressTime();
+        UpdateMultipleClickCount();
+        UpdateClickStaticHoldTime();
     }
 
-    private void UpdateMultipleClick()
+    private void UpdateMultipleClickCount()
     {
-        if (_multipleClickCount > 0)
+        if (_multipleClickCount is 0) return;
+
+        _multipleClickTimer += Time.fixedDeltaTime;
+        if (_multipleClickTimer > MaxMultipleClickDuration)
         {
-            _multipleClickTimer += Time.fixedDeltaTime;
-            if (_multipleClickTimer > MaxMultipleClickTime)
-            {
-                _multipleClickCount = 0;
-                _multipleClickTimer = 0;
-            }
+            _multipleClickCount = 0;
+            _multipleClickTimer = 0;
         }
     }
 
-    private void UpdateStaticPressTime()
+    private void UpdateClickStaticHoldTime()
     {
-        if (_clickedDown)
+        if (_clickData.Pressed is false || _staticHoldLocked) return;
+
+        if (IsVectorsMatch(_clickData.ClickDownPosition, _movementData.Position))
         {
-            var distance = Vector2.Distance(_clickData.ClickDownPosition, _movementData.Position);
-            if (distance < 3)
-            {
-                _staticPressTime += Time.fixedDeltaTime;
-                _clickData.OnStaticPressTimeChanged(_staticPressTime);
-            }
+            var holdTime = _clickData.StaticHoldTime + Time.fixedDeltaTime;
+            _clickData.OnStaticHoldTimeChanged(holdTime);
         }
+        else
+        {
+            _staticHoldLocked = true;
+            _clickData.OnStaticHoldTimeChanged(0);
+        }
+    }
+
+    private bool IsVectorsMatch(in Vector2 vector1, in Vector2 vector2)
+    {
+        var distance = Vector2.Distance(vector1, vector2);
+        return distance < 5;
     }
 }}
