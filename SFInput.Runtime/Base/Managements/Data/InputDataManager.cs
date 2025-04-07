@@ -8,13 +8,17 @@ public sealed class InputDataManager<TData> : IInputDataManager<TData> where TDa
     private readonly Dictionary<int, Action> _dataChangeActions = new();
 
     public IReadOnlyDictionary<int, TData> Data { get => _data; }
-    public event Action<TData> AnyDataChanged;
+
+    public event Action <int, TData> DataAdded;
+    public event Action<TData> DataChanged;
+    public event Action<int, TData> DataRemoved;
 
     public void AddData(int index, TData data)
     {
         if (_data.TryAdd(index, data))
         {
             SubscribeData(index, data);
+            DataAdded?.Invoke(index, data);
         }
     }
 
@@ -23,19 +27,25 @@ public sealed class InputDataManager<TData> : IInputDataManager<TData> where TDa
         if (_data.Remove(index, out var data))
         {
             UnsubscribeData(index, data);
+            DataRemoved?.Invoke(index, data);
         }
     }
 
     private void SubscribeData(int index, TData data)
     {
-        Action action = () => AnyDataChanged?.Invoke(data);
-        _dataChangeActions.Add(index, action);
-        data.Changed += action;
+        var action = new Action(() => DataChanged?.Invoke(data));
+
+        if (_dataChangeActions.TryAdd(index, action))
+        {
+            data.Changed += action;
+        }
     }
 
     private void UnsubscribeData(int index, TData data)
     {
-        _dataChangeActions.Remove(index, out var action);
-        data.Changed -= action;
+        if (_dataChangeActions.Remove(index, out var action))
+        {
+            data.Changed -= action;
+        }
     }
 }}
