@@ -1,3 +1,4 @@
+using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 namespace SFInput.Screen {
@@ -17,9 +18,11 @@ public sealed class MousePinchInputAdder : InputAdder<MousePinchInputController,
 
     protected override IReadOnlyDictionary<int, MousePinchInputController> GetControllers()
     {
+        var pinchInput = new InputAction(type: InputActionType.Value, binding: "<Mouse>/scroll");
+
         return new Dictionary<int, MousePinchInputController>()
         {
-            { 0, new(AddableManager.DataManager.Data[0]) }
+            { 0, new(pinchInput, AddableManager.DataManager.Data[0]) }
         };
     }
 }}

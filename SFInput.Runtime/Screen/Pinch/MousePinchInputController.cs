@@ -5,36 +5,56 @@ using UnityEngine.InputSystem;
 namespace SFInput.Screen {
 public sealed class MousePinchInputController : InputController, IDisposable
 {
-    private readonly InputAction _scrollInput;
+    private readonly InputAction _pinchInput;
     private readonly PinchInputData _pinchData;
 
-    public MousePinchInputController(PinchInputData pinchData)
+    private bool _pinchInputPerformed;
+
+    public MousePinchInputController(InputAction pinchInput, PinchInputData pinchData)
     {
-        _scrollInput = new(type: InputActionType.Value, binding:"<Mouse>/scroll");
+        _pinchInput = pinchInput;
         _pinchData = pinchData;
     }
 
     public void Dispose()
     {
-        _scrollInput.Dispose();
+        _pinchInput.Dispose();
     }
 
     protected override void OnEnable()
     {
-        _scrollInput.performed += OnScrollInputPerformed;
-        _scrollInput.Enable();
+        _pinchInput.performed += PerformPinchInput;
+        _pinchInput.canceled += CancelPinchInput;
+        _pinchInput.Enable();
     }
 
     protected override void OnDisable()
     {
-        _scrollInput.performed -= OnScrollInputPerformed;
-        _scrollInput.Disable();
+        _pinchInput.performed -= PerformPinchInput;
+        _pinchInput.canceled -= CancelPinchInput;
+        _pinchInput.Disable();
     }
 
-    private void OnScrollInputPerformed(InputAction.CallbackContext callback)
+    private void PerformPinchInput(InputAction.CallbackContext callback)
     {
-        if (PredicateManager.Result() is false) return;
+        if (PredicateManager.Result())
+        {
+            _pinchData.OnPinchValueChanged(callback.ReadValue<Vector2>().y);
+            _pinchData.OnPinchMiddlePositionChanged(Mouse.current.position.ReadValue());
+            _pinchData.OnPinchChanged(_pinchData.PinchValue, _pinchData.PinchMiddlePosition);
 
-        _pinchData.OnPinchChanged(callback.ReadValue<Vector2>().y, Mouse.current.position.ReadValue());
+            _pinchInputPerformed = true;
+        }
+    }
+
+    private void CancelPinchInput(InputAction.CallbackContext callback)
+    {
+        if (_pinchInputPerformed)
+        {
+            _pinchData.OnPinchValueChanged(0);
+            _pinchData.OnPinchMiddlePositionChanged(Vector2.zero);
+
+            _pinchInputPerformed = false;
+        }
     }
 }}

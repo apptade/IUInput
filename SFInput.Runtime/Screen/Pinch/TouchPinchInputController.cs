@@ -3,22 +3,19 @@ using UnityEngine;
 namespace SFInput.Screen {
 public sealed class TouchPinchInputController : InputController
 {
-    private readonly MovementInputData _firstMovementData;
-    private readonly MovementInputData _secondMovementData;
     private readonly ClickInputData _firstClickData;
     private readonly ClickInputData _secondClickData;
     private readonly PinchInputData _pinchData;
 
-    private int _errorPinchValue;
     private float _lastPinchDistance;
+    private int _errorPinchNumber;
+    private bool _pinchInputPerformed;
 
-    public int MaxErrorPinchCount { get; set; } = 1;
+    public int MaxErrorPinchCount { get; set; } = 3;
     public float PinchSensitivity { get; set; } = 0.5f;
 
-    public TouchPinchInputController(MovementInputData movementData1, MovementInputData movementData2, ClickInputData clickData1, ClickInputData clickData2, PinchInputData pinchData)
+    public TouchPinchInputController(ClickInputData clickData1, ClickInputData clickData2, PinchInputData pinchData)
     {
-        _firstMovementData = movementData1;
-        _secondMovementData = movementData2;
         _firstClickData = clickData1;
         _secondClickData = clickData2;
         _pinchData = pinchData;
@@ -26,52 +23,56 @@ public sealed class TouchPinchInputController : InputController
 
     protected override void OnEnable()
     {
-        _firstClickData.ClickUpChanged += OnAnyClickUpChanged;
-        _firstMovementData.PositionChanged += OnAnyPositionChanged;
+        _firstClickData.ClickMovementChanged += PerformPinchInput;
+        _firstClickData.ClickUpChanged += CancelPinchInput;
 
-        _secondClickData.ClickUpChanged += OnAnyClickUpChanged;
-        _secondMovementData.PositionChanged += OnAnyPositionChanged;
+        _secondClickData.ClickMovementChanged += PerformPinchInput;
+        _secondClickData.ClickUpChanged += CancelPinchInput;
     }
 
     protected override void OnDisable()
     {
-        _firstClickData.ClickUpChanged -= OnAnyClickUpChanged;
-        _firstMovementData.PositionChanged -= OnAnyPositionChanged;
+        _firstClickData.ClickMovementChanged -= PerformPinchInput;
+        _firstClickData.ClickUpChanged -= CancelPinchInput;
 
-        _secondClickData.ClickUpChanged -= OnAnyClickUpChanged;
-        _secondMovementData.PositionChanged -= OnAnyPositionChanged;
+        _secondClickData.ClickMovementChanged -= PerformPinchInput;
+        _secondClickData.ClickUpChanged -= CancelPinchInput;
     }
 
-    private void OnAnyClickUpChanged(Vector2 position)
+    private void PerformPinchInput(Vector2 delta, Vector2 position)
     {
-        _errorPinchValue = 0;
-    }
+        var canExecuted = _firstClickData.Pressed && _secondClickData.Pressed && PredicateManager.Result();
+        if (canExecuted is false) return;
 
-    private void OnAnyPositionChanged(Vector2 position)
-    {
-        if (PredicateManager.Result() is false) return;
-        if (_firstClickData.Pressed is false || _secondClickData.Pressed is false) return;
-
-        _errorPinchValue++;
-
-        var position1 = _firstMovementData.Position;
-        var position2 = _secondMovementData.Position;
+        var position1 = _firstClickData.ClickPosition;
+        var position2 = _secondClickData.ClickPosition;
         var pinchDistance = Vector2.Distance(position1, position2);
 
-        if (_errorPinchValue > MaxErrorPinchCount)
+        if (++_errorPinchNumber > MaxErrorPinchCount)
         {
             var middlePosition = Vector2.Lerp(position1, position2, 0.5f);
+            var pinchValue = pinchDistance > _lastPinchDistance ? PinchSensitivity : -PinchSensitivity;
 
-            if (pinchDistance > _lastPinchDistance)
-            {
-                _pinchData.OnPinchChanged(PinchSensitivity, middlePosition);
-            }
-            else if (pinchDistance < _lastPinchDistance)
-            {
-                _pinchData.OnPinchChanged(-PinchSensitivity, middlePosition);
-            }
+            _pinchData.OnPinchValueChanged(pinchValue);
+            _pinchData.OnPinchMiddlePositionChanged(middlePosition);
+            _pinchData.OnPinchChanged(pinchValue, middlePosition);
+
+            _pinchInputPerformed = true;
         }
 
         _lastPinchDistance = pinchDistance;
+    }
+
+    private void CancelPinchInput(Vector2 position)
+    {
+        if (_pinchInputPerformed)
+        {
+            _pinchData.OnPinchValueChanged(0);
+            _pinchData.OnPinchMiddlePositionChanged(Vector2.zero);
+
+            _pinchInputPerformed = false;
+        }
+
+        _errorPinchNumber = 0;
     }
 }}
