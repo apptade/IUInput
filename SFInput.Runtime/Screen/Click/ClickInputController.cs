@@ -9,6 +9,7 @@ public sealed class ClickInputController : InputController, IDisposable
     private readonly InputAction _clickInput;
     private readonly MovementInputData _movementData;
 
+    private bool _clickPressed;
     private int _multipleClickCount;
     private float _multipleClickTimer;
     private bool _staticHoldLocked;
@@ -51,7 +52,7 @@ public sealed class ClickInputController : InputController, IDisposable
 
     private void ChangeMovementDelta(Vector2 delta)
     {
-        if (_clickData.Pressed)
+        if (_clickPressed)
         {
             _clickData.OnClickDeltaChanged(delta);
         }
@@ -59,7 +60,7 @@ public sealed class ClickInputController : InputController, IDisposable
 
     private void ChangeMovementPosition(Vector2 position)
     {
-        if (_clickData.Pressed)
+        if (_clickPressed)
         {
             _clickData.OnClickPositionChanged(position);
         }
@@ -67,7 +68,7 @@ public sealed class ClickInputController : InputController, IDisposable
 
     private void ChangeMovement(Vector2 delta, Vector2 position)
     {
-        if (_clickData.Pressed)
+        if (_clickPressed)
         {
             _clickData.OnClickMovementChanged(delta, position);
         }
@@ -77,6 +78,7 @@ public sealed class ClickInputController : InputController, IDisposable
     {
         if (PredicateManager.Result())
         {
+            _clickPressed = true;
             _clickData.OnClickDownChanged(_movementData.Position);
             ChangeMovementPosition(_movementData.Position);
         }
@@ -84,7 +86,7 @@ public sealed class ClickInputController : InputController, IDisposable
 
     private void CancelClickInput(InputAction.CallbackContext callback)
     {
-        if (_clickData.Pressed is false) return;
+        if (_clickPressed is false) return;
 
         _clickData.OnClickUpChanged(_movementData.Position);
 
@@ -94,6 +96,7 @@ public sealed class ClickInputController : InputController, IDisposable
             _clickData.OnStaticClickChanged(_movementData.Position, _multipleClickCount++);
         }
 
+        _clickPressed = false;
         _staticHoldLocked = false;
         _clickData.OnStaticHoldTimeChanged(0);
         _clickData.OnClickDeltaChanged(Vector2.zero);
@@ -120,7 +123,7 @@ public sealed class ClickInputController : InputController, IDisposable
 
     private void UpdateClickStaticHoldTime()
     {
-        if (_clickData.Pressed is false || _staticHoldLocked) return;
+        if (_clickPressed is false || _staticHoldLocked) return;
 
         if (IsVectorsMatch(_clickData.ClickDownPosition, _movementData.Position))
         {
