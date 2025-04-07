@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace SFInput {
@@ -9,6 +10,11 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
 
     public IReadOnlyDictionary<int, IReadOnlyList<TController>> Controllers { get => _readControllers; }
     public IReadOnlyDictionary<int, IInputPredicateManager> PredicateManagers { get => _predicateManagers; }
+
+    public event Action<int, TController> ControllerAdded;
+    public event Action<int, TController> ControllerRemoved;
+    public event Action<int, IInputPredicateManager> PredicateManagerAdded;
+    public event Action<int, IInputPredicateManager> PredicateManagerRemoved;
 
     public void AddController(int index, TController controller)
     {
@@ -23,6 +29,7 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
         }
 
         _writeControllers[index].Add(controller);
+        ControllerAdded?.Invoke(index, controller);
 
         if (_predicateManagers.TryGetValue(index, out var manager))
         {
@@ -36,6 +43,7 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
 
         if (_predicateManagers.TryAdd(index, manager))
         {
+            PredicateManagerAdded?.Invoke(index, manager);
             this.ForEachController(c => c.PredicateManager.AddManager(manager));
         }
     }
@@ -46,7 +54,10 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
 
         if (_writeControllers.TryGetValue(index, out var collection))
         {
-            collection.Remove(controller);
+            if (collection.Remove(controller)) 
+            {
+                ControllerRemoved?.Invoke(index, controller);
+            }
 
             if (_predicateManagers.TryGetValue(index, out var manager))
             {
@@ -59,6 +70,7 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
     {
         if (_predicateManagers.Remove(index, out var manager))
         {
+            PredicateManagerRemoved?.Invoke(index, manager);
             this.ForEachController(c => c.PredicateManager.RemoveManager(manager));
         }
     }
