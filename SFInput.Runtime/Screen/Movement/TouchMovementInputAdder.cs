@@ -14,15 +14,9 @@ public sealed class TouchMovementInputAdder : MovementInputAdder
 
     protected override IReadOnlyDictionary<int, MovementInputController> GetControllers()
     {
-        var primaryDeltaInput = new InputAction(type: InputActionType.Value, binding:"<Touchscreen>/primaryTouch/delta");
-        var primaryPositionInput = new InputAction(type: InputActionType.Value, binding: "<Touchscreen>/primaryTouch/position");
+        var dictionary = new Dictionary<int, MovementInputController>(SupportedFingersCount);
 
-        var dictionary = new Dictionary<int, MovementInputController>(SupportedFingersCount)
-        {
-            { 0, new(primaryDeltaInput, primaryPositionInput, AddableManager.DataManager.Data[0]) }
-        };
-
-        for (int i = 1; i < SupportedFingersCount; i++)
+        for (int i = 0; i < SupportedFingersCount; i++)
         {
             var deltaInput = new InputAction(type: InputActionType.Value, binding: $"<Touchscreen>/touch{i}/delta");
             var positionInput = new InputAction(type: InputActionType.Value, binding: $"<Touchscreen>/touch{i}/position");
