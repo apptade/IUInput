@@ -41,8 +41,7 @@ public sealed class TouchPinchInputController : InputController
 
     private void PerformPinchInput(Vector2 delta, Vector2 position)
     {
-        var canExecuted = _firstClickData.Pressed && _secondClickData.Pressed && PredicateManager.Result();
-        if (canExecuted is false) return;
+        if (IsCanPinch() is false) return;
 
         var position1 = _firstClickData.ClickPosition;
         var position2 = _secondClickData.ClickPosition;
@@ -74,5 +73,19 @@ public sealed class TouchPinchInputController : InputController
         }
 
         _errorPinchNumber = 0;
+    }
+
+    private bool IsCanPinch()
+    {
+        if (_firstClickData.Pressed is false || _secondClickData.Pressed is false) return false;
+
+        var delta1 = _firstClickData.ClickDelta;
+        var delta2 = _secondClickData.ClickDelta;
+        if (delta1 != Vector2.zero && delta2 != Vector2.zero)
+        {
+            if (Vector2.Dot(delta1.normalized, delta2.normalized) > -0.9f) return false;
+        }
+
+        return PredicateManager.Result();
     }
 }}
