@@ -3,7 +3,7 @@ public abstract class MovementInputAdder : InputAdder<MovementInputController, M
 {
     protected override void OnDestroy()
     {
+        foreach (var controller in Controllers.Values) controller.Dispose();
         base.OnDestroy();
-        this.ForEachController(c => c.Dispose());
     }
 }}

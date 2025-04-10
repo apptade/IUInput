@@ -15,22 +15,22 @@ public abstract class InputAdder<TController, TData> : MonoBehaviour, IInputAdde
     protected virtual void Awake()
     {
         _controllers = GetControllers();
-        _addableManager.ControllerManager.AddControllers(_controllers);
+        _addableManager.ControllerManager.AddControllers(Controllers);
     }
 
     protected virtual void OnEnable()
     {
-        this.ForEachController(c => c.Enable());
+        foreach (var controller in Controllers.Values) controller.Enable();
     }
 
     protected virtual void OnDisable()
     {
-        this.ForEachController(c => c.Disable());
+        foreach (var controller in Controllers.Values) controller.Disable();
     }
 
     protected virtual void OnDestroy()
     {
-        _addableManager.ControllerManager.RemoveControllers(_controllers);
+        _addableManager.ControllerManager.RemoveControllers(Controllers);
     }
 
     protected abstract IReadOnlyDictionary<int, TController> GetControllers();

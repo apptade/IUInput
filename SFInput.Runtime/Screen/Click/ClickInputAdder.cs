@@ -9,15 +9,12 @@ public abstract class ClickInputAdder : InputAdder<ClickInputController, ClickIn
 
     protected override void OnDestroy()
     {
+        foreach (var controller in Controllers.Values) controller.Dispose();
         base.OnDestroy();
-        this.ForEachController(c => c.Dispose());
     }
 
     protected virtual void FixedUpdate()
     {
-        foreach (var controller in Controllers.Values)
-        {
-            controller.FixedUpdate();
-        }
+        foreach (var controller in Controllers.Values) controller.FixedUpdate();
     }
 }}

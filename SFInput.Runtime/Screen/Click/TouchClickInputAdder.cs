@@ -20,7 +20,10 @@ public sealed class TouchClickInputAdder : ClickInputAdder
         for (int i = 0; i < SupportedFingersCount; i++)
         {
             var clickInput = new InputAction(type: InputActionType.Button, binding: $"<Touchscreen>/touch{i}/press");
-            dictionary.Add(i, new(clickInput, MovementManager.DataManager.Data[i], AddableManager.DataManager.Data[i]));
+            var controller = new ClickInputController(clickInput, MovementManager.DataManager.Data[i], AddableManager.DataManager.Data[i]);
+
+            controller.PredicateManager.AddManager(MovementManager.ControllerManager.GetOrCreatePredicateManager(i));
+            dictionary.Add(i, controller);
         }
 
         return dictionary;

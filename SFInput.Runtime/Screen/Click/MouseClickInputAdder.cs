@@ -21,7 +21,10 @@ public sealed class MouseClickInputAdder : ClickInputAdder
 
         for (int i = 0; i < _clickInputs.Length; i++)
         {
-            dictionary.Add(i, new(_clickInputs[i], MovementManager.DataManager.Data[0], AddableManager.DataManager.Data[i]));
+            var controller = new ClickInputController(_clickInputs[i], MovementManager.DataManager.Data[0], AddableManager.DataManager.Data[i]);
+            controller.PredicateManager.AddManager(MovementManager.ControllerManager.GetOrCreatePredicateManager(0));
+
+            dictionary.Add(i, controller);
         }
 
         return dictionary;
