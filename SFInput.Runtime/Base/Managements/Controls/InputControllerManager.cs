@@ -44,7 +44,14 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
         if (_predicateManagers.TryAdd(index, manager))
         {
             PredicateManagerAdded?.Invoke(index, manager);
-            this.ForEachController(c => c.PredicateManager.AddManager(manager));
+
+            if (_readControllers.TryGetValue(index, out var controllers))
+            {
+                foreach (var controller in controllers)
+                {
+                    controller.PredicateManager.AddManager(manager);
+                }
+            }
         }
     }
 
@@ -54,14 +61,14 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
 
         if (_writeControllers.TryGetValue(index, out var collection))
         {
-            if (collection.Remove(controller)) 
+            if (collection.Remove(controller))
             {
                 ControllerRemoved?.Invoke(index, controller);
-            }
 
-            if (_predicateManagers.TryGetValue(index, out var manager))
-            {
-                controller.PredicateManager.RemoveManager(manager);
+                if (_predicateManagers.TryGetValue(index, out var manager))
+                {
+                    controller.PredicateManager.RemoveManager(manager);
+                }
             }
         }
     }
@@ -71,7 +78,14 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
         if (_predicateManagers.Remove(index, out var manager))
         {
             PredicateManagerRemoved?.Invoke(index, manager);
-            this.ForEachController(c => c.PredicateManager.RemoveManager(manager));
+
+            if (_readControllers.TryGetValue(index, out var controllers))
+            {
+                foreach (var controller in controllers)
+                {
+                    controller.PredicateManager.RemoveManager(manager);
+                }
+            }
         }
     }
 }}

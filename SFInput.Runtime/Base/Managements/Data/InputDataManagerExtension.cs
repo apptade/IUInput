@@ -5,6 +5,8 @@ public static class InputDataManagerExtension
     {
         for (int i = startIndex; i < count; i++)
         {
+            if (manager.Data.ContainsKey(i)) continue;
+
             var data = new TData();
             manager.AddData(i, data);
         }
