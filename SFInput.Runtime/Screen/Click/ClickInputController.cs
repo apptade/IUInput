@@ -76,7 +76,7 @@ public sealed class ClickInputController : InputController, IDisposable
 
     private void PerformClickInput(InputAction.CallbackContext callback)
     {
-        if (PredicateManager.Result())
+        if (PredicateManager.AllResult())
         {
             _clickPressed = true;
             _clickData.OnClickDownChanged(_movementData.Position);

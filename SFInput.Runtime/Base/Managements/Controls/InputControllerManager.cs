@@ -33,7 +33,7 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
 
         if (_predicateManagers.TryGetValue(index, out var manager))
         {
-            controller.PredicateManager.AddManager(manager);
+            //controller.PredicateManager.AddManager(manager);
         }
     }
 
@@ -49,7 +49,7 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
             {
                 foreach (var controller in controllers)
                 {
-                    controller.PredicateManager.AddManager(manager);
+                    //controller.PredicateManager.AddManager(manager);
                 }
             }
         }
@@ -67,7 +67,7 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
 
                 if (_predicateManagers.TryGetValue(index, out var manager))
                 {
-                    controller.PredicateManager.RemoveManager(manager);
+                    //controller.PredicateManager.RemoveManager(manager);
                 }
             }
         }
@@ -83,7 +83,7 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
             {
                 foreach (var controller in controllers)
                 {
-                    controller.PredicateManager.RemoveManager(manager);
+                    //controller.PredicateManager.RemoveManager(manager);
                 }
             }
         }

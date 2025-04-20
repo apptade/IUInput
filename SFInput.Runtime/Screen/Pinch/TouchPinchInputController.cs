@@ -86,6 +86,6 @@ public sealed class TouchPinchInputController : InputController
             if (Vector2.Dot(delta1.normalized, delta2.normalized) > -0.9f) return false;
         }
 
-        return PredicateManager.Result();
+        return PredicateManager.AllResult();
     }
 }}

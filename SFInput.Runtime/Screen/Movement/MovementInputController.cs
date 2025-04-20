@@ -51,7 +51,7 @@ public sealed class MovementInputController : InputController, IDisposable
 
     private void StartDeltaInput(InputAction.CallbackContext callback)
     {
-        if (PredicateManager.Result())
+        if (PredicateManager.AllResult())
         {
             _movementData.OnDeltaChanged(callback.ReadValue<Vector2>());
             _lastInputDelta = _movementData.Delta;
@@ -68,7 +68,7 @@ public sealed class MovementInputController : InputController, IDisposable
 
     private void StartPositionInput(InputAction.CallbackContext callback)
     {
-        if (PredicateManager.Result())
+        if (PredicateManager.AllResult())
         {
             _movementData.OnPositionChanged(callback.ReadValue<Vector2>());
         }
@@ -86,7 +86,7 @@ public sealed class MovementInputController : InputController, IDisposable
 
     private void PerformPositionInput(InputAction.CallbackContext callback)
     {
-        if (_positionInputExecuteCount > 1 && PredicateManager.Result())
+        if (_positionInputExecuteCount > 1 && PredicateManager.AllResult())
         {
             _movementData.OnPositionChanged(callback.ReadValue<Vector2>());
             _movementData.OnMovementChanged(_lastInputDelta, _movementData.Position);

@@ -26,7 +26,7 @@ public sealed class MousePinchInputAdder : InputAdder<MousePinchInputController,
         var pinchInput = new InputAction(type: InputActionType.Value, binding: "<Mouse>/scroll");
         var controller = new MousePinchInputController(pinchInput, AddableManager.DataManager.Data[0]);
 
-        controller.PredicateManager.AddManager(_movementManager.ControllerManager.GetOrCreatePredicateManager(0));
+        //controller.PredicateManager.AddManager(_movementManager.ControllerManager.GetOrCreatePredicateManager(0));
         dictionary.Add(0, controller);
 
         return dictionary;

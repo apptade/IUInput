@@ -22,7 +22,7 @@ public sealed class TouchClickInputAdder : ClickInputAdder
             var clickInput = new InputAction(type: InputActionType.Button, binding: $"<Touchscreen>/touch{i}/press");
             var controller = new ClickInputController(clickInput, MovementManager.DataManager.Data[i], AddableManager.DataManager.Data[i]);
 
-            controller.PredicateManager.AddManager(MovementManager.ControllerManager.GetOrCreatePredicateManager(i));
+            //controller.PredicateManager.AddManager(MovementManager.ControllerManager.GetOrCreatePredicateManager(i));
             dictionary.Add(i, controller);
         }
 

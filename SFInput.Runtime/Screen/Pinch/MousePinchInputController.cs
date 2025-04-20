@@ -37,7 +37,7 @@ public sealed class MousePinchInputController : InputController, IDisposable
 
     private void PerformPinchInput(InputAction.CallbackContext callback)
     {
-        if (PredicateManager.Result())
+        if (PredicateManager.AllResult())
         {
             _pinchData.OnPinchValueChanged(callback.ReadValue<Vector2>().y);
             _pinchData.OnPinchMiddlePositionChanged(Mouse.current.position.ReadValue());
