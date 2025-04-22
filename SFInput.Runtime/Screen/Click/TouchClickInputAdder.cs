@@ -1,3 +1,5 @@
+using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
@@ -19,10 +21,12 @@ public sealed class TouchClickInputAdder : ClickInputAdder
 
         for (int i = 0; i < SupportedFingersCount; i++)
         {
-            var clickInput = new InputAction(type: InputActionType.Button, binding: $"<Touchscreen>/touch{i}/press");
-            var controller = new ClickInputController(clickInput, MovementManager.DataManager.Data[i], AddableManager.DataManager.Data[i]);
+            var movementData = MovementManager.DataManager.Data[i];
+            var positionFunc = new Func<Vector2>(() => Touchscreen.current.touches[i].position.value);
 
-            //controller.PredicateManager.AddManager(MovementManager.ControllerManager.GetOrCreatePredicateManager(i));
+            var clickInput = new InputAction(type: InputActionType.Button, binding: $"<Touchscreen>/touch{i}/press");
+            var controller = new ClickInputController(clickInput, movementData, positionFunc, AddableManager.DataManager.Data[i]);
+
             dictionary.Add(i, controller);
         }
 

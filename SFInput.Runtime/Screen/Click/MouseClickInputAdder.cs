@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
@@ -19,11 +20,12 @@ public sealed class MouseClickInputAdder : ClickInputAdder
     {
         var dictionary = new Dictionary<int, ClickInputController>(_clickInputs.Length);
 
+        var movementData = MovementManager.DataManager.Data[0];
+        var positionFunc = new Func<Vector2>(() => Mouse.current.position.value);
+
         for (int i = 0; i < _clickInputs.Length; i++)
         {
-            var controller = new ClickInputController(_clickInputs[i], MovementManager.DataManager.Data[0], AddableManager.DataManager.Data[i]);
-            //controller.PredicateManager.AddManager(MovementManager.ControllerManager.GetOrCreatePredicateManager(0));
-
+            var controller = new ClickInputController(_clickInputs[i], movementData, positionFunc, AddableManager.DataManager.Data[i]);
             dictionary.Add(i, controller);
         }
 
