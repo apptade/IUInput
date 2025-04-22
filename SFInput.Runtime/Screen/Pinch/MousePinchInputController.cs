@@ -1,22 +1,18 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace SFInput.Screen {
-public sealed class MousePinchInputController : InputController, IDisposable
+public sealed class MousePinchInputController : PinchInputController
 {
     private readonly InputAction _pinchInput;
-    private readonly PinchInputData _pinchData;
-
     private bool _pinchInputPerformed;
 
-    public MousePinchInputController(InputAction pinchInput, PinchInputData pinchData)
+    public MousePinchInputController(InputAction pinchInput, PinchInputData pinchData) : base(pinchData)
     {
         _pinchInput = pinchInput;
-        _pinchData = pinchData;
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
         _pinchInput.Dispose();
     }
@@ -37,11 +33,13 @@ public sealed class MousePinchInputController : InputController, IDisposable
 
     private void PerformPinchInput(InputAction.CallbackContext callback)
     {
+        SettableMiddlePosition = Mouse.current.position.ReadValue();
+
         if (PredicateManager.AllResult())
         {
-            _pinchData.OnPinchValueChanged(callback.ReadValue<Vector2>().y);
-            _pinchData.OnPinchMiddlePositionChanged(Mouse.current.position.ReadValue());
-            _pinchData.OnPinchChanged(_pinchData.PinchValue, _pinchData.PinchMiddlePosition);
+            PinchData.OnPinchValueChanged(callback.ReadValue<Vector2>().y);
+            PinchData.OnPinchMiddlePositionChanged(SettableMiddlePosition);
+            PinchData.OnPinchChanged(PinchData.PinchValue, PinchData.PinchMiddlePosition);
 
             _pinchInputPerformed = true;
         }
@@ -51,10 +49,11 @@ public sealed class MousePinchInputController : InputController, IDisposable
     {
         if (_pinchInputPerformed)
         {
-            _pinchData.OnPinchValueChanged(0);
-            _pinchData.OnPinchMiddlePositionChanged(Vector2.zero);
+            PinchData.OnPinchValueChanged(0);
+            PinchData.OnPinchMiddlePositionChanged(Vector2.zero);
 
             _pinchInputPerformed = false;
+            SettableMiddlePosition = Vector2.zero;
         }
     }
 }}

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 namespace SFInput.Screen {
-public sealed class TouchPinchInputAdder : InputAdder<TouchPinchInputController, PinchInputData>
+public sealed class TouchPinchInputAdder : InputAdder<PinchInputController, PinchInputData>
 {
     [SerializeField]
     private InputManager<ClickInputController, ClickInputData> _clickManager;
@@ -15,13 +15,13 @@ public sealed class TouchPinchInputAdder : InputAdder<TouchPinchInputController,
         base.Awake();
     }
 
-    protected override IReadOnlyDictionary<int, TouchPinchInputController> GetControllers()
+    protected override IReadOnlyDictionary<int, PinchInputController> GetControllers()
     {
-        var dictionary = new Dictionary<int, TouchPinchInputController>(SupportedFingersCount);
+        var dictionary = new Dictionary<int, PinchInputController>(SupportedFingersCount / 2);
 
         for (int i = 0, a = 0; i < SupportedFingersCount; i += 2, a++)
         {
-            dictionary.Add(a, new(
+            dictionary.Add(a, new TouchPinchInputController(
                 _clickManager.DataManager.Data[i], 
                 _clickManager.DataManager.Data[i + 1], 
                 AddableManager.DataManager.Data[a]

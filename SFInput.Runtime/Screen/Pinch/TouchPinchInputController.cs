@@ -1,11 +1,10 @@
 using UnityEngine;
 
 namespace SFInput.Screen {
-public sealed class TouchPinchInputController : InputController
+public sealed class TouchPinchInputController : PinchInputController
 {
     private readonly ClickInputData _firstClickData;
     private readonly ClickInputData _secondClickData;
-    private readonly PinchInputData _pinchData;
 
     private float _lastPinchDistance;
     private int _errorPinchNumber;
@@ -14,11 +13,10 @@ public sealed class TouchPinchInputController : InputController
     public int MaxErrorPinchCount { get; set; } = 3;
     public float PinchSensitivity { get; set; } = 0.5f;
 
-    public TouchPinchInputController(ClickInputData clickData1, ClickInputData clickData2, PinchInputData pinchData)
+    public TouchPinchInputController(ClickInputData clickData1, ClickInputData clickData2, PinchInputData pinchData) : base(pinchData)
     {
         _firstClickData = clickData1;
         _secondClickData = clickData2;
-        _pinchData = pinchData;
     }
 
     protected override void OnEnable()
@@ -41,20 +39,23 @@ public sealed class TouchPinchInputController : InputController
 
     private void PerformPinchInput(Vector2 delta, Vector2 position)
     {
-        if (IsCanPinch() is false) return;
-
         var position1 = _firstClickData.ClickPosition;
         var position2 = _secondClickData.ClickPosition;
+
+        var middlePosition = Vector2.Lerp(position1, position2, 0.5f);
+        SettableMiddlePosition = middlePosition;
+
+        if (IsCanPinch() is false) return;
+
         var pinchDistance = Vector2.Distance(position1, position2);
 
         if (++_errorPinchNumber > MaxErrorPinchCount)
         {
-            var middlePosition = Vector2.Lerp(position1, position2, 0.5f);
             var pinchValue = pinchDistance > _lastPinchDistance ? PinchSensitivity : -PinchSensitivity;
 
-            _pinchData.OnPinchValueChanged(pinchValue);
-            _pinchData.OnPinchMiddlePositionChanged(middlePosition);
-            _pinchData.OnPinchChanged(pinchValue, middlePosition);
+            PinchData.OnPinchValueChanged(pinchValue);
+            PinchData.OnPinchMiddlePositionChanged(middlePosition);
+            PinchData.OnPinchChanged(pinchValue, middlePosition);
 
             _pinchInputPerformed = true;
         }
@@ -66,10 +67,11 @@ public sealed class TouchPinchInputController : InputController
     {
         if (_pinchInputPerformed)
         {
-            _pinchData.OnPinchValueChanged(0);
-            _pinchData.OnPinchMiddlePositionChanged(Vector2.zero);
+            PinchData.OnPinchValueChanged(0);
+            PinchData.OnPinchMiddlePositionChanged(Vector2.zero);
 
             _pinchInputPerformed = false;
+            SettableMiddlePosition = Vector2.zero;
         }
 
         _errorPinchNumber = 0;

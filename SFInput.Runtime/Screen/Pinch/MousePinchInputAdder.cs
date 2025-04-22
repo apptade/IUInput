@@ -1,13 +1,9 @@
-using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 namespace SFInput.Screen {
-public sealed class MousePinchInputAdder : InputAdder<MousePinchInputController, PinchInputData>
+public sealed class MousePinchInputAdder : InputAdder<PinchInputController, PinchInputData>
 {
-    [SerializeField]
-    private InputManager<ClickInputController, MovementInputData> _movementManager;
-
     protected override void Awake()
     {
         AddableManager.DataManager.AddData(0, 1);
@@ -20,15 +16,13 @@ public sealed class MousePinchInputAdder : InputAdder<MousePinchInputController,
         base.OnDestroy();
     }
 
-    protected override IReadOnlyDictionary<int, MousePinchInputController> GetControllers()
+    protected override IReadOnlyDictionary<int, PinchInputController> GetControllers()
     {
-        var dictionary = new Dictionary<int, MousePinchInputController>(1);
+        var dictionary = new Dictionary<int, PinchInputController>(1);
         var pinchInput = new InputAction(type: InputActionType.Value, binding: "<Mouse>/scroll");
         var controller = new MousePinchInputController(pinchInput, AddableManager.DataManager.Data[0]);
 
-        //controller.PredicateManager.AddManager(_movementManager.ControllerManager.GetOrCreatePredicateManager(0));
         dictionary.Add(0, controller);
-
         return dictionary;
     }
 }}
