@@ -6,10 +6,10 @@ namespace SFInput {
 public abstract class InputAdder<TController, TData> : MonoBehaviour, IInputAdder<TController, TData> where TController : IInputController where TData : IInputData
 {
     [SerializeField]
-    private InputManager<TData> _addableManager;
+    private InputManager<TController, TData> _addableManager;
     private IReadOnlyDictionary<int, TController> _controllers;
 
-    public IInputManager<TData> AddableManager { get => _addableManager; }
+    public IInputManager<TController, TData> AddableManager { get => _addableManager; }
     public IReadOnlyDictionary<int, TController> Controllers { get => _controllers; }
 
     protected virtual void Awake()

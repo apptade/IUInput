@@ -2,22 +2,13 @@ namespace SFInput {
 public abstract class InputController : IInputController
 {
     private bool _enabled;
-    private readonly IInputPredicateManager _predicateManager;
 
     public bool Enabled { get => _enabled; }
-    public IInputPredicateManager PredicateManager { get => _predicateManager; }
+    public IInputPredicateManager PredicateManager { get; }
 
     public InputController()
     {
-        _predicateManager = new InputPredicateManager();
-    }
-
-    public void Enable()
-    {
-        if (_enabled) return;
-
-        _enabled = true;
-        OnEnable();
+        PredicateManager = new InputPredicateManager();
     }
 
     public void Disable()
@@ -28,6 +19,14 @@ public abstract class InputController : IInputController
         OnDisable();
     }
 
-    protected abstract void OnEnable();
+    public void Enable()
+    {
+        if (_enabled) return;
+
+        _enabled = true;
+        OnEnable();
+    }
+
     protected abstract void OnDisable();
+    protected abstract void OnEnable();
 }}

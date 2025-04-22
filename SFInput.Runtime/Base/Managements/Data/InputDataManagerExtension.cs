@@ -1,13 +1,13 @@
 namespace SFInput {
 public static class InputDataManagerExtension
 {
-    public static void AddData<TData>(this IInputDataManager<TData> manager, int startIndex, int count) where TData : IInputData, new()
+    public static void AddData<TSource>(this IInputDataManager<TSource> manager, int startIndex, int count) where TSource : IInputData, new()
     {
         for (int i = startIndex; i < count; i++)
         {
             if (manager.Data.ContainsKey(i)) continue;
 
-            var data = new TData();
+            var data = new TSource();
             manager.AddData(i, data);
         }
     }

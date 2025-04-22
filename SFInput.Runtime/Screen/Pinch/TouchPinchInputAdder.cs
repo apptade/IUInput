@@ -5,7 +5,7 @@ namespace SFInput.Screen {
 public sealed class TouchPinchInputAdder : InputAdder<TouchPinchInputController, PinchInputData>
 {
     [SerializeField]
-    private InputManager<ClickInputData> _clickManager;
+    private InputManager<ClickInputController, ClickInputData> _clickManager;
     public int SupportedFingersCount { get => 10; }
 
     protected override void Awake()

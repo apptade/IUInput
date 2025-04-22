@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace SFInput.Screen {
 public sealed class InputBreakerOnUI : MonoBehaviour
 {
-    [SerializeField] private InputManager<MovementInputData> _addableMovementManager;
+    [SerializeField] private InputManager<MovementInputController, MovementInputData> _addableMovementManager;
     [SerializeField] private EventSystem _eventSystem;
 
     private IInputPredicate[] _inputPredicates;
@@ -23,12 +23,12 @@ public sealed class InputBreakerOnUI : MonoBehaviour
 
     private void OnEnable()
     {
-        _addableMovementManager.ControllerManager.AddPredicates(_inputPredicates);
+        //_addableMovementManager.ControllerManager.AddPredicates(_inputPredicates);
     }
 
     private void OnDisable()
     {
-        _addableMovementManager.ControllerManager.RemovePredicates(_inputPredicates);
+        //_addableMovementManager.ControllerManager.RemovePredicates(_inputPredicates);
     }
 
     private sealed class UIInputPredicate : IInputPredicate

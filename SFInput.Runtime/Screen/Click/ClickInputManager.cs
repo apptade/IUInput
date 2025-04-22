@@ -1,4 +1,4 @@
 namespace SFInput.Screen {
-public sealed class ClickInputManager : InputManager<ClickInputData>
+public sealed class ClickInputManager : InputManager<ClickInputController, ClickInputData>
 {
 }}

@@ -13,22 +13,30 @@ public sealed class InputDataManager<TData> : IInputDataManager<TData> where TDa
     public event Action<TData> DataChanged;
     public event Action<int, TData> DataRemoved;
 
-    public void AddData(int index, TData data)
+    public bool AddData(int index, TData data)
     {
         if (_data.TryAdd(index, data))
         {
             SubscribeData(index, data);
             DataAdded?.Invoke(index, data);
+
+            return true;
         }
+
+        return false;
     }
 
-    public void RemoveData(int index)
+    public bool RemoveData(int index)
     {
         if (_data.Remove(index, out var data))
         {
             UnsubscribeData(index, data);
             DataRemoved?.Invoke(index, data);
+
+            return true;
         }
+
+        return false;
     }
 
     private void SubscribeData(int index, TData data)

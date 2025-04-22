@@ -4,8 +4,8 @@ namespace SFInput.Screen {
 public abstract class ClickInputAdder : InputAdder<ClickInputController, ClickInputData>
 {
     [SerializeField]
-    private InputManager<MovementInputData> _movementManager;
-    public InputManager<MovementInputData> MovementManager { get => _movementManager; }
+    private InputManager<MovementInputController, MovementInputData> _movementManager;
+    public InputManager<MovementInputController, MovementInputData> MovementManager { get => _movementManager; }
 
     protected override void OnDestroy()
     {

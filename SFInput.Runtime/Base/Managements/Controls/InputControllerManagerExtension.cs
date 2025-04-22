@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace SFInput {
@@ -11,27 +12,6 @@ public static class InputControllerManagerExtension
         }
     }
 
-    public static void AddPredicates<TSource>(this IInputControllerManager<TSource> manager, IReadOnlyList<IInputPredicate> predicates) where TSource : IInputController
-    {
-        for (int i = 0; i < predicates.Count; i++)
-        {
-            manager.GetOrCreatePredicateManager(i).AddPredicate(predicates[i]);
-        }
-    }
-
-    public static IInputPredicateManager GetOrCreatePredicateManager<TSource>(this IInputControllerManager<TSource> manager, int index) where TSource : IInputController
-    {
-        if (manager.PredicateManagers.TryGetValue(index, out var predicateManager))
-        {
-            return predicateManager;
-        }
-        else
-        {
-            manager.AddPredicateManager(index, new InputPredicateManager());
-            return manager.PredicateManagers[index];
-        }
-    }
-
     public static void RemoveControllers<TSource, TValue>(this IInputControllerManager<TSource> manager, IEnumerable<KeyValuePair<int, TValue>> controllers) where TSource : IInputController where TValue : TSource
     {
         foreach (var keyValuePair in controllers)
@@ -40,13 +20,13 @@ public static class InputControllerManagerExtension
         }
     }
 
-    public static void RemovePredicates<TSource>(this IInputControllerManager<TSource> manager, IReadOnlyList<IInputPredicate> predicates) where TSource : IInputController
+    public static void ForEachController<TSource>(this IInputControllerManager<TSource> manager, Action<TSource> action) where TSource : IInputController
     {
-        for (int i = 0; i < predicates.Count; i++)
+        foreach (var controllers in manager.Controllers.Values)
         {
-            if (manager.PredicateManagers.TryGetValue(i, out var predicateManager))
+            foreach (var controller in controllers)
             {
-                predicateManager.RemovePredicate(predicates[i]);
+                action(controller);
             }
         }
     }

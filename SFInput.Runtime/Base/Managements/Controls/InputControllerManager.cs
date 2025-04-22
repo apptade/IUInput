@@ -4,88 +4,51 @@ using System.Collections.Generic;
 namespace SFInput {
 public sealed class InputControllerManager<TController> : IInputControllerManager<TController> where TController : IInputController
 {
-    private readonly Dictionary<int, IInputPredicateManager> _predicateManagers = new();
-    private readonly Dictionary<int, IReadOnlyList<TController>> _readControllers = new();
-    private readonly Dictionary<int, ICollection<TController>> _writeControllers = new();
+    private readonly Dictionary<int, IReadOnlyList<TController>> _controllers;
+    private readonly InputControllerPredicateConnector<TController> _connector;
 
-    public IReadOnlyDictionary<int, IReadOnlyList<TController>> Controllers { get => _readControllers; }
-    public IReadOnlyDictionary<int, IInputPredicateManager> PredicateManagers { get => _predicateManagers; }
+    public IReadOnlyDictionary<int, IReadOnlyList<TController>> Controllers { get => _controllers; }
+    public IInputPredicateManager<TController> PredicateManager { get; }
 
     public event Action<int, TController> ControllerAdded;
     public event Action<int, TController> ControllerRemoved;
-    public event Action<int, IInputPredicateManager> PredicateManagerAdded;
-    public event Action<int, IInputPredicateManager> PredicateManagerRemoved;
 
-    public void AddController(int index, TController controller)
+    public InputControllerManager()
     {
-        if (controller is null) return;
+        _controllers = new();
+        _connector = new(this);
+        PredicateManager = new InputPredicateManager<TController>();
 
-        if (_writeControllers.ContainsKey(index) is false)
+        _connector.Enable();
+    }
+
+    public bool AddController(int index, TController controller)
+    {
+        if (controller is null) return false;
+
+        if (_controllers.ContainsKey(index) is false)
         {
             var collection = new List<TController>();
-
-            _writeControllers.Add(index, collection);
-            _readControllers.Add(index, collection);
+            _controllers.Add(index, collection);
         }
 
-        _writeControllers[index].Add(controller);
+        ((ICollection<TController>)_controllers[index]).Add(controller);
         ControllerAdded?.Invoke(index, controller);
 
-        if (_predicateManagers.TryGetValue(index, out var manager))
-        {
-            //controller.PredicateManager.AddManager(manager);
-        }
+        return true;
     }
 
-    public void AddPredicateManager(int index, IInputPredicateManager manager)
+    public bool RemoveController(int index, TController controller)
     {
-        if (manager is null) return;
-
-        if (_predicateManagers.TryAdd(index, manager))
+        if (_controllers.TryGetValue(index, out var collection))
         {
-            PredicateManagerAdded?.Invoke(index, manager);
-
-            if (_readControllers.TryGetValue(index, out var controllers))
-            {
-                foreach (var controller in controllers)
-                {
-                    //controller.PredicateManager.AddManager(manager);
-                }
-            }
-        }
-    }
-
-    public void RemoveController(int index, TController controller)
-    {
-        if (controller is null) return;
-
-        if (_writeControllers.TryGetValue(index, out var collection))
-        {
-            if (collection.Remove(controller))
+            if (((ICollection<TController>)collection).Remove(controller))
             {
                 ControllerRemoved?.Invoke(index, controller);
-
-                if (_predicateManagers.TryGetValue(index, out var manager))
-                {
-                    //controller.PredicateManager.RemoveManager(manager);
-                }
+                return true;
             }
         }
-    }
 
-    public void RemovePredicateManager(int index)
-    {
-        if (_predicateManagers.Remove(index, out var manager))
-        {
-            PredicateManagerRemoved?.Invoke(index, manager);
-
-            if (_readControllers.TryGetValue(index, out var controllers))
-            {
-                foreach (var controller in controllers)
-                {
-                    //controller.PredicateManager.RemoveManager(manager);
-                }
-            }
-        }
+        return false;
     }
 }}

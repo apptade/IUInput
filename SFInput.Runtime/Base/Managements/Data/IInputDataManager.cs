@@ -10,6 +10,6 @@ public interface IInputDataManager<TData> where TData : IInputData
     event Action<TData> DataChanged;
     event Action<int, TData> DataRemoved;
 
-    void AddData(int index, TData data);
-    void RemoveData(int index);
+    bool AddData(int index, TData data);
+    bool RemoveData(int index);
 }}

@@ -1,4 +1,4 @@
 namespace SFInput.Screen {
-public sealed class PinchInputManager : InputManager<PinchInputData>
+public sealed class PinchInputManager : InputManager<IInputController, PinchInputData>
 {
 }}

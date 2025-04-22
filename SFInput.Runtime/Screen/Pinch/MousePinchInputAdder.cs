@@ -6,7 +6,7 @@ namespace SFInput.Screen {
 public sealed class MousePinchInputAdder : InputAdder<MousePinchInputController, PinchInputData>
 {
     [SerializeField]
-    private InputManager<MovementInputData> _movementManager;
+    private InputManager<ClickInputController, MovementInputData> _movementManager;
 
     protected override void Awake()
     {

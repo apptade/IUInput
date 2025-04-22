@@ -1,6 +1,6 @@
 namespace SFInput {
-public interface IInputManager<TData> where TData : IInputData
+public interface IInputManager<TController, TData> where TController : IInputController where TData : IInputData
 {
-    IInputControllerManager<IInputController> ControllerManager { get; }
+    IInputControllerManager<TController> ControllerManager { get; }
     IInputDataManager<TData> DataManager { get; }
 }}
