@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
@@ -19,13 +18,11 @@ public sealed class MouseClickInputAdder : ClickInputAdder
     protected override IReadOnlyDictionary<int, ClickInputController> GetControllers()
     {
         var dictionary = new Dictionary<int, ClickInputController>(_clickInputs.Length);
-
         var movementData = MovementManager.DataManager.Data[0];
-        var positionFunc = new Func<Vector2>(() => Mouse.current.position.value);
 
         for (int i = 0; i < _clickInputs.Length; i++)
         {
-            var controller = new ClickInputController(_clickInputs[i], movementData, positionFunc, AddableManager.DataManager.Data[i]);
+            var controller = new MouseClickInputController(_clickInputs[i], movementData, AddableManager.DataManager.Data[i]);
             dictionary.Add(i, controller);
         }
 

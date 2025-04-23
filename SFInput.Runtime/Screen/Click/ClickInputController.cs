@@ -3,11 +3,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace SFInput.Screen {
-public sealed class ClickInputController : InputController, IDisposable
+public abstract class ClickInputController : InputController, IDisposable
 {
     private readonly InputAction _clickInput;
 
-    public readonly Func<Vector2> PositionFunc;
     public readonly ClickInputData ClickData;
     public readonly MovementInputData MovementData;
 
@@ -19,11 +18,10 @@ public sealed class ClickInputController : InputController, IDisposable
 
     public float MaxMultipleClickDuration { get; set; } = 0.25f;
 
-    public ClickInputController(InputAction clickInput, MovementInputData movementData, Func<Vector2> positionFunc, ClickInputData clickData)
+    public ClickInputController(InputAction clickInput, MovementInputData movementData, ClickInputData clickData)
     {
         _clickInput = clickInput;
         MovementData = movementData;
-        PositionFunc = positionFunc;
         ClickData = clickData;
     }
 
@@ -71,7 +69,7 @@ public sealed class ClickInputController : InputController, IDisposable
 
     private void StartClickInput(InputAction.CallbackContext callback)
     {
-        SettableClickDownPosition = PositionFunc();
+        SettableClickDownPosition = GetCurrentPosition();
 
         if (PredicateManager.AllResult())
         {
@@ -141,4 +139,6 @@ public sealed class ClickInputController : InputController, IDisposable
         var distance = Vector2.Distance(vector1, vector2);
         return distance < 5;
     }
+
+    protected abstract Vector2 GetCurrentPosition();
 }}
