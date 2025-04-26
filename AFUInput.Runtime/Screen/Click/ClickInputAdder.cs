@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public abstract class ClickInputAdder : InputAdder<ClickInputController, ClickInputData>
 {
     [SerializeField]

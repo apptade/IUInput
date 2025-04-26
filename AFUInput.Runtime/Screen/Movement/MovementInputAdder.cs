@@ -1,4 +1,4 @@
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public abstract class MovementInputAdder : InputAdder<MovementInputController, MovementInputData>
 {
     protected override void OnDestroy()

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SFInput {
+namespace AFUInput {
 public sealed class InputControllerManager<TController> : IInputControllerManager<TController> where TController : IInputController
 {
     private readonly Dictionary<int, IReadOnlyList<TController>> _controllers;

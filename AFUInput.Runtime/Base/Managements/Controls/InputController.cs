@@ -1,4 +1,4 @@
-namespace SFInput {
+namespace AFUInput {
 public abstract class InputController : IInputController
 {
     private bool _enabled;

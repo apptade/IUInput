@@ -1,10 +1,7 @@
 {
-    "name": "SFInput.Screen",
-    "rootNamespace": "SFInput.Screen",
-    "references": [
-        "GUID:fe54e7938afdf294891f7a2e0e7fddbd",
-        "GUID:75469ad4d38634e559750d17036d5f7c"
-    ],
+    "name": "AFUInput",
+    "rootNamespace": "AFUInput",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public abstract class ClickInputController : InputController, IDisposable
 {
     private readonly InputAction _clickInput;

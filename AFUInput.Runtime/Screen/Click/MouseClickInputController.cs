@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public sealed class MouseClickInputController : ClickInputController
 {
     public MouseClickInputController(InputAction clickInput, MovementInputData movementData, ClickInputData clickData) : base(clickInput, movementData, clickData)

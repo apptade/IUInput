@@ -1,4 +1,4 @@
-namespace SFInput {
+namespace AFUInput {
 public sealed class InputPredicateManager : InternalInputPredicateManager<IInputPredicate>, IInputPredicateManager
 {
     public bool AllResult()

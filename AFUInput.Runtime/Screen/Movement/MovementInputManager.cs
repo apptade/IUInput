@@ -1,4 +1,4 @@
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public sealed class MovementInputManager : InputManager<MovementInputController, MovementInputData>
 {
 }}

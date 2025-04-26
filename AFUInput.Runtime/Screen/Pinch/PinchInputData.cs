@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public sealed class PinchInputData : IInputData
 {
     public float PinchValue { get; private set; }

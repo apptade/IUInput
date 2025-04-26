@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public abstract class PinchInputController : InputController, IDisposable
 {
     public readonly PinchInputData PinchData;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SFInput {
+namespace AFUInput {
 [DefaultExecutionOrder(-1000)]
 public abstract class InputManager<TController, TData> : MonoBehaviour, IInputManager<TController, TData> where TController : IInputController where TData : IInputData
 {

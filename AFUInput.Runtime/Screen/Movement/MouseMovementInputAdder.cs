@@ -1,7 +1,7 @@
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public sealed class MouseMovementInputAdder : MovementInputAdder
 {
     protected override void Awake()

@@ -1,7 +1,7 @@
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public sealed class TouchMovementInputAdder : MovementInputAdder
 {
     public int SupportedFingersCount { get => 10; }

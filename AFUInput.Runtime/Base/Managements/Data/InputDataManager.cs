@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SFInput {
+namespace AFUInput {
 public sealed class InputDataManager<TData> : IInputDataManager<TData> where TData : IInputData
 {
     private readonly Dictionary<int, TData> _data = new();

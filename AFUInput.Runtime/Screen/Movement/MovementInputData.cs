@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public sealed class MovementInputData : IInputData
 {
     public Vector2 Delta { get; private set; }

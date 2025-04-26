@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SFInput.Screen {
+namespace AFUInput.Screen {
 public sealed class TouchPinchInputController : PinchInputController
 {
     private readonly ClickInputData _firstClickData;

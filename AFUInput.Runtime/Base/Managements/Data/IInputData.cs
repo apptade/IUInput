@@ -1,6 +1,6 @@
 using System;
 
-namespace SFInput {
+namespace AFUInput {
 public interface IInputData
 {
     event Action Changed;
