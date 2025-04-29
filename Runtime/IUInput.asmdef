@@ -1,6 +1,6 @@
 {
-    "name": "AFUInput",
-    "rootNamespace": "AFUInput",
+    "name": "IUInput",
+    "rootNamespace": "IUInput",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
