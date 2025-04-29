@@ -1,14 +1,14 @@
 {
-    "name": "com.apptade.sfinput",
-    "version": "0.2.0",
-    "displayName": "SFInput",
-    "description": "Simple-Fast and extensionally input system",
-    "unity": "2019.4",
-    "documentationUrl": "https://github.com/apptade/SFInput/blob/main/README.md",
-    "changelogUrl": "https://github.com/apptade/SFInput/releases",
-    "licensesUrl": "https://github.com/apptade/SFInput/blob/main/LICENSE.md",
+    "name": "com.apptade.iuinput",
+    "version": "0.3.0",
+    "displayName": "IUInput",
+    "description": "Is fast and extensionally Input System for Unity engine",
+    "unity": "2021.3",
+    "documentationUrl": "https://github.com/apptade/IUInput/blob/main/README.md",
+    "changelogUrl": "https://github.com/apptade/IUInput/releases",
+    "licensesUrl": "https://github.com/apptade/IUInput/blob/main/LICENSE.md",
     "dependencies": {
-      "com.unity.inputsystem": "1.11.2"
+      "com.unity.inputsystem": "1.14.0"
    },
    "keywords": [
       "input system",
