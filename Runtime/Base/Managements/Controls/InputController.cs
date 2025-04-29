@@ -1,4 +1,4 @@
-namespace AFUInput {
+namespace IUInput {
 public abstract class InputController : IInputController
 {
     private bool _enabled;

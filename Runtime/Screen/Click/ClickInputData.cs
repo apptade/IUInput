@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AFUInput.Screen {
+namespace IUInput.Screen {
 public sealed class ClickInputData : IInputData
 {
     public bool Pressed { get; private set; }

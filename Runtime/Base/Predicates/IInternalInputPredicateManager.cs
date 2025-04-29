@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AFUInput {
+namespace IUInput {
 public interface IInternalInputPredicateManager<T>
 {
     IEnumerable<T> Predicates { get; }

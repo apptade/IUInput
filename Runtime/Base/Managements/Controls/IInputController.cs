@@ -1,4 +1,4 @@
-namespace AFUInput {
+namespace IUInput {
 public interface IInputController
 {
     bool Enabled { get; }

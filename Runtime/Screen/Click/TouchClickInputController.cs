@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace AFUInput.Screen {
+namespace IUInput.Screen {
 public sealed class TouchClickInputController : ClickInputController
 {
     private readonly int _pointerId;

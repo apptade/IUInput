@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace AFUInput.Screen {
+namespace IUInput.Screen {
 public sealed class TouchPinchInputAdder : InputAdder<PinchInputController, PinchInputData>
 {
     [SerializeField]

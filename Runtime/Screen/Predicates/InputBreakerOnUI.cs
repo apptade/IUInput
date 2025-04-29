@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-namespace AFUInput.Screen {
+namespace IUInput.Screen {
 public sealed class InputBreakerOnUI : MonoBehaviour
 {
     [SerializeField] private InputManager<ClickInputController, ClickInputData> _clickManager;

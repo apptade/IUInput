@@ -1,4 +1,4 @@
-namespace AFUInput {
+namespace IUInput {
 public static class InputDataManagerExtension
 {
     public static void AddData<TSource>(this IInputDataManager<TSource> manager, int startIndex, int count) where TSource : IInputData, new()

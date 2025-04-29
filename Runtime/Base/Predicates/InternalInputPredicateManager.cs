@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AFUInput {
+namespace IUInput {
 public abstract class InternalInputPredicateManager<T> : IInternalInputPredicateManager<T>
 {
     protected readonly ICollection<T> _predicates;

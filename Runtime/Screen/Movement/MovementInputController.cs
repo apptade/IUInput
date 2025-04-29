@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace AFUInput.Screen {
+namespace IUInput.Screen {
 public sealed class MovementInputController : InputController, IDisposable
 {
     private readonly InputAction _deltaInput;

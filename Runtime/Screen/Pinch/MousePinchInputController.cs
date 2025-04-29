@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace AFUInput.Screen {
+namespace IUInput.Screen {
 public sealed class MousePinchInputController : PinchInputController
 {
     private readonly InputAction _pinchInput;

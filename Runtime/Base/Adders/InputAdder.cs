@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace AFUInput {
+namespace IUInput {
 [DefaultExecutionOrder(-750)]
 public abstract class InputAdder<TController, TData> : MonoBehaviour, IInputAdder<TController, TData> where TController : IInputController where TData : IInputData
 {

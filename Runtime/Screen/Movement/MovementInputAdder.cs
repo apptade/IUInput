@@ -1,4 +1,4 @@
-namespace AFUInput.Screen {
+namespace IUInput.Screen {
 public abstract class MovementInputAdder : InputAdder<MovementInputController, MovementInputData>
 {
     protected override void OnDestroy()

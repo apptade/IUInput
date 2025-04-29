@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-namespace AFUInput.Screen {
+namespace IUInput.Screen {
 public sealed class MouseClickInputAdder : ClickInputAdder
 {
     [SerializeField]

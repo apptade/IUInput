@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace AFUInput {
+namespace IUInput {
 public sealed class InputControllerPredicateConnector<TController> where TController : IInputController
 {
     private readonly IInputControllerManager<TController> _controllerManager;
