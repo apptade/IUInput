@@ -10,6 +10,6 @@ public interface IInputControllerManager<TController> where TController : IInput
     event Action<int, TController> ControllerAdded;
     event Action<int, TController> ControllerRemoved;
 
-    bool AddController(int index, TController controller);
-    bool RemoveController(int index, TController controller);
+    bool AddController(int key, TController controller);
+    bool RemoveController(int key, TController controller);
 }}

@@ -28,7 +28,7 @@ public sealed class InputControllerPredicateConnector<TController> where TContro
         _controllerManager.PredicateManager.PredicateRemoved += RemovePredicateConnection;
     }
 
-    public void AddControllerConnection(int index, TController controller)
+    public void AddControllerConnection(int key, TController controller)
     {
         foreach (var predicate in _controllerManager.PredicateManager.Predicates)
         {
@@ -36,7 +36,7 @@ public sealed class InputControllerPredicateConnector<TController> where TContro
         }
     }
 
-    public void RemoveControllerConnection(int index, TController controller)
+    public void RemoveControllerConnection(int key, TController controller)
     {
         foreach (var predicate in _controllerManager.PredicateManager.Predicates)
         {

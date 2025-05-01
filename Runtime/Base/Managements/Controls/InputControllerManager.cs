@@ -22,29 +22,29 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
         _connector.Enable();
     }
 
-    public bool AddController(int index, TController controller)
+    public bool AddController(int key, TController controller)
     {
         if (controller is null) return false;
 
-        if (_controllers.ContainsKey(index) is false)
+        if (_controllers.ContainsKey(key) is false)
         {
             var collection = new List<TController>();
-            _controllers.Add(index, collection);
+            _controllers.Add(key, collection);
         }
 
-        ((ICollection<TController>)_controllers[index]).Add(controller);
-        ControllerAdded?.Invoke(index, controller);
+        ((ICollection<TController>)_controllers[key]).Add(controller);
+        ControllerAdded?.Invoke(key, controller);
 
         return true;
     }
 
-    public bool RemoveController(int index, TController controller)
+    public bool RemoveController(int key, TController controller)
     {
-        if (_controllers.TryGetValue(index, out var collection))
+        if (_controllers.TryGetValue(key, out var collection))
         {
             if (((ICollection<TController>)collection).Remove(controller))
             {
-                ControllerRemoved?.Invoke(index, controller);
+                ControllerRemoved?.Invoke(key, controller);
                 return true;
             }
         }
