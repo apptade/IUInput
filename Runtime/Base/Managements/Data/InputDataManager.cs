@@ -15,6 +15,8 @@ public sealed class InputDataManager<TData> : IInputDataManager<TData> where TDa
 
     public bool AddData(int key, TData data)
     {
+        if (data is null) return false;
+
         if (_data.TryAdd(key, data))
         {
             SubscribeData(key, data);
@@ -41,13 +43,10 @@ public sealed class InputDataManager<TData> : IInputDataManager<TData> where TDa
 
     private void SubscribeData(int key, TData data)
     {
-        if (_dataChangeActions.ContainsKey(key) is false)
-        {
-            var action = new Action(() => DataChanged?.Invoke(data));
+        var action = new Action(() => DataChanged?.Invoke(data));
 
-            _dataChangeActions.Add(key, action);
-            data.Changed += action;
-        }
+        _dataChangeActions.Add(key, action);
+        data.Changed += action;
     }
 
     private void UnsubscribeData(int key, TData data)
