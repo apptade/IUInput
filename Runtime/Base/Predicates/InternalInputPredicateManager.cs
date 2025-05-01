@@ -4,18 +4,18 @@ using System.Collections.Generic;
 namespace IUInput {
 public abstract class InternalInputPredicateManager<T> : IInternalInputPredicateManager<T>
 {
-    protected readonly ICollection<T> _predicates;
+    private readonly ICollection<T> _predicates;
     public IEnumerable<T> Predicates { get => _predicates; }
 
     public event Action<T> PredicateAdded;
     public event Action<T> PredicateRemoved;
 
-    public InternalInputPredicateManager(ICollection<T> predicates = null)
+    public InternalInputPredicateManager()
     {
-        _predicates = predicates ?? new List<T>();
+        _predicates = new List<T>();
     }
 
-    public virtual bool AddPredicate(T predicate)
+    public bool AddPredicate(T predicate)
     {
         if (predicate is null) return false;
 
@@ -25,7 +25,7 @@ public abstract class InternalInputPredicateManager<T> : IInternalInputPredicate
         return true;
     }
 
-    public virtual bool RemovePredicate(T predicate)
+    public bool RemovePredicate(T predicate)
     {
         if (_predicates.Remove(predicate))
         {
