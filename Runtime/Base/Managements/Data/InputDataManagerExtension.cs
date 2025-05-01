@@ -1,14 +1,13 @@
 namespace IUInput {
 public static class InputDataManagerExtension
 {
-    public static void AddData<TSource>(this IInputDataManager<TSource> manager, int startIndex, int count) where TSource : IInputData, new()
+    public static TData GetData<TData>(this IInputDataManager<TData> manager, in int key) where TData : IInputData, new()
     {
-        for (int i = startIndex; i < count; i++)
-        {
-            if (manager.Data.ContainsKey(i)) continue;
+        if (manager.Data.TryGetValue(key, out var value)) return value;
 
-            var data = new TSource();
-            manager.AddData(i, data);
-        }
+        var data = new TData();
+        if (manager.AddData(key, data)) return data;
+
+        return default;
     }
 }}

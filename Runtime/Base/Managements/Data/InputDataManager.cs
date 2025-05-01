@@ -13,12 +13,12 @@ public sealed class InputDataManager<TData> : IInputDataManager<TData> where TDa
     public event Action<TData> DataChanged;
     public event Action<int, TData> DataRemoved;
 
-    public bool AddData(int index, TData data)
+    public bool AddData(int key, TData data)
     {
-        if (_data.TryAdd(index, data))
+        if (_data.TryAdd(key, data))
         {
-            SubscribeData(index, data);
-            DataAdded?.Invoke(index, data);
+            SubscribeData(key, data);
+            DataAdded?.Invoke(key, data);
 
             return true;
         }
@@ -26,12 +26,12 @@ public sealed class InputDataManager<TData> : IInputDataManager<TData> where TDa
         return false;
     }
 
-    public bool RemoveData(int index)
+    public bool RemoveData(int key)
     {
-        if (_data.Remove(index, out var data))
+        if (_data.Remove(key, out var data))
         {
-            UnsubscribeData(index, data);
-            DataRemoved?.Invoke(index, data);
+            UnsubscribeData(key, data);
+            DataRemoved?.Invoke(key, data);
 
             return true;
         }
@@ -39,19 +39,20 @@ public sealed class InputDataManager<TData> : IInputDataManager<TData> where TDa
         return false;
     }
 
-    private void SubscribeData(int index, TData data)
+    private void SubscribeData(int key, TData data)
     {
-        var action = new Action(() => DataChanged?.Invoke(data));
-
-        if (_dataChangeActions.TryAdd(index, action))
+        if (_dataChangeActions.ContainsKey(key) is false)
         {
+            var action = new Action(() => DataChanged?.Invoke(data));
+
+            _dataChangeActions.Add(key, action);
             data.Changed += action;
         }
     }
 
-    private void UnsubscribeData(int index, TData data)
+    private void UnsubscribeData(int key, TData data)
     {
-        if (_dataChangeActions.Remove(index, out var action))
+        if (_dataChangeActions.Remove(key, out var action))
         {
             data.Changed -= action;
         }

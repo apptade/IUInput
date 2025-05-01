@@ -6,12 +6,6 @@ public sealed class TouchMovementInputAdder : MovementInputAdder
 {
     public int SupportedFingersCount { get => 10; }
 
-    protected override void Awake()
-    {
-        AddableManager.DataManager.AddData(0, SupportedFingersCount);
-        base.Awake();
-    }
-
     protected override IReadOnlyDictionary<int, MovementInputController> GetControllers()
     {
         var dictionary = new Dictionary<int, MovementInputController>(SupportedFingersCount);
@@ -21,7 +15,7 @@ public sealed class TouchMovementInputAdder : MovementInputAdder
             var deltaInput = new InputAction(type: InputActionType.Value, binding: $"<Touchscreen>/touch{i}/delta");
             var positionInput = new InputAction(type: InputActionType.Value, binding: $"<Touchscreen>/touch{i}/position");
 
-            dictionary.Add(i, new(deltaInput, positionInput, AddableManager.DataManager.Data[i]));
+            dictionary.Add(i, new(deltaInput, positionInput, AddableManager.DataManager.GetData(i)));
         }
 
         return dictionary;
