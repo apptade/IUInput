@@ -75,7 +75,7 @@ public sealed class InputBreakerOnUI : MonoBehaviour
 
         public override bool Result(MovementInputController entry)
         {
-            return IsPositionNotOverUI(entry.SettablePosition);
+            return !entry.SettablePosition.HasValue || IsPositionNotOverUI(entry.SettablePosition.Value);
         }
     }
 
