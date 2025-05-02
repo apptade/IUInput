@@ -85,7 +85,7 @@ public sealed class InputBreakerOnUI : MonoBehaviour
 
         public override bool Result(PinchInputController entry)
         {
-            return IsPositionNotOverUI(entry.SettableMiddlePosition);
+            return !entry.SettableMiddlePosition.HasValue || IsPositionNotOverUI(entry.SettableMiddlePosition.Value);
         }
     }
 }}

@@ -6,17 +6,18 @@ public sealed class TouchPinchInputAdder : InputAdder<PinchInputController, Pinc
 {
     [SerializeField]
     private InputManager<ClickInputController, ClickInputData> _clickManager;
-    public int SupportedFingersCount { get => 10; }
 
     protected override IReadOnlyDictionary<int, PinchInputController> GetControllers()
     {
-        var dictionary = new Dictionary<int, PinchInputController>(SupportedFingersCount / 2);
+        var supportedFingersCount = 10;
+        var dictionary = new Dictionary<int, PinchInputController>(supportedFingersCount / 2);
 
-        for (int i = 0, a = 0; i < SupportedFingersCount; i += 2, a++)
+        for (int i = 0, a = 0; i < supportedFingersCount; i += 2, a++)
         {
-            dictionary.Add(a, new TouchPinchInputController(
-                _clickManager.DataManager.GetData(i), 
-                _clickManager.DataManager.GetData(i + 1), 
+            dictionary.Add(a, new TouchPinchInputController
+            (
+                _clickManager.DataManager.GetData(i),
+                _clickManager.DataManager.GetData(i + 1),
                 AddableManager.DataManager.GetData(a)
             ));
         }

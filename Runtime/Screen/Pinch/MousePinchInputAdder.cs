@@ -1,3 +1,4 @@
+using System;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
@@ -6,17 +7,22 @@ public sealed class MousePinchInputAdder : InputAdder<PinchInputController, Pinc
 {
     protected override void OnDestroy()
     {
-        foreach (var controller in Controllers.Values) controller.Dispose();
+        foreach (var controller in Controllers.Values)
+        {
+            if (controller is IDisposable disposable) disposable.Dispose(); 
+        }
+
         base.OnDestroy();
     }
 
     protected override IReadOnlyDictionary<int, PinchInputController> GetControllers()
     {
-        var dictionary = new Dictionary<int, PinchInputController>(1);
         var pinchInput = new InputAction(type: InputActionType.Value, binding: "<Mouse>/scroll");
         var controller = new MousePinchInputController(pinchInput, AddableManager.DataManager.GetData(0));
 
-        dictionary.Add(0, controller);
-        return dictionary;
+        return new Dictionary<int, PinchInputController>()
+        {
+            { 0, controller }
+        };
     }
 }}

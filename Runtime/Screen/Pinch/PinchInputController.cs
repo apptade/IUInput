@@ -1,16 +1,15 @@
-using System;
 using UnityEngine;
 
 namespace IUInput.Screen {
-public abstract class PinchInputController : InputController, IDisposable
+public abstract class PinchInputController : InputController
 {
-    public readonly PinchInputData PinchData;
-    public Vector2 SettableMiddlePosition { get; protected set; }
+    protected readonly PinchInputData _pinchData;
+
+    public float? SettableValue { get; protected set; }
+    public Vector2? SettableMiddlePosition { get; protected set; }
 
     public PinchInputController(PinchInputData pinchData)
     {
-        PinchData = pinchData;
+        _pinchData = pinchData;
     }
-
-    public virtual void Dispose() {}
 }}

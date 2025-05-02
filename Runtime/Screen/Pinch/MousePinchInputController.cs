@@ -1,18 +1,18 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace IUInput.Screen {
-public sealed class MousePinchInputController : PinchInputController
+public sealed class MousePinchInputController : PinchInputController, IDisposable
 {
     private readonly InputAction _pinchInput;
-    private bool _pinchInputPerformed;
 
     public MousePinchInputController(InputAction pinchInput, PinchInputData pinchData) : base(pinchData)
     {
         _pinchInput = pinchInput;
     }
 
-    public override void Dispose()
+    public void Dispose()
     {
         _pinchInput.Dispose();
     }
@@ -33,27 +33,26 @@ public sealed class MousePinchInputController : PinchInputController
 
     private void PerformPinchInput(InputAction.CallbackContext callback)
     {
+        SettableValue = callback.ReadValue<Vector2>().y;
         SettableMiddlePosition = Mouse.current.position.ReadValue();
 
         if (PredicateManager.AllResult())
         {
-            PinchData.OnPinchValueChanged(callback.ReadValue<Vector2>().y);
-            PinchData.OnPinchMiddlePositionChanged(SettableMiddlePosition);
-            PinchData.OnPinchChanged(PinchData.PinchValue, PinchData.PinchMiddlePosition);
-
-            _pinchInputPerformed = true;
+            _pinchData.OnPinchValueChanged(SettableValue.Value);
+            _pinchData.OnPinchMiddlePositionChanged(SettableMiddlePosition.Value);
+            _pinchData.OnPinchChanged(SettableValue.Value, SettableMiddlePosition.Value);
         }
+
+        SettableValue = null;
+        SettableMiddlePosition = null;
     }
 
     private void CancelPinchInput(InputAction.CallbackContext callback)
     {
-        if (_pinchInputPerformed)
+        if (_pinchData.PinchValue is not 0)
         {
-            PinchData.OnPinchValueChanged(0);
-            PinchData.OnPinchMiddlePositionChanged(Vector2.zero);
-
-            _pinchInputPerformed = false;
-            SettableMiddlePosition = Vector2.zero;
+            _pinchData.OnPinchValueChanged(0);
+            _pinchData.OnPinchMiddlePositionChanged(Vector2.zero);
         }
     }
 }}
