@@ -11,7 +11,7 @@ public sealed class TouchClickInputController : ClickInputController
         _pointerId = pointerId;
     }
 
-    protected override Vector2 GetCurrentPosition()
+    protected override Vector2 CurrentPointerPosition()
     {
         return Touchscreen.current.touches[_pointerId].position.value;
     }
