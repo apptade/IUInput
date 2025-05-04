@@ -1,0 +1,17 @@
+{
+    "name": "IUInput.Screen.Samples",
+    "rootNamespace": "IUInput.Screen.Samples",
+    "references": [
+        "GUID:fe54e7938afdf294891f7a2e0e7fddbd",
+        "GUID:4b88207f5ffe7e949b95bfa1234c043d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
