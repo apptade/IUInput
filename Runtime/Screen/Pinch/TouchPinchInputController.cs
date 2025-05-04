@@ -82,8 +82,10 @@ public sealed class TouchPinchInputController : PinchInputController
         var delta1 = _firstClickData.ClickDelta;
         var delta2 = _secondClickData.ClickDelta;
 
-        if (delta1 == Vector2.zero || delta2 == Vector2.zero) return false;
-        if (Vector2.Dot(delta1.normalized, delta2.normalized) > -0.9f) return false;
+        if (delta1 != Vector2.zero && delta2 != Vector2.zero)
+        {
+            if (Vector2.Dot(delta1.normalized, delta2.normalized) > -0.9f) return false;
+        }
 
         return true;
     }
