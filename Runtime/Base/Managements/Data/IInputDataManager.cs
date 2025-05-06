@@ -7,7 +7,6 @@ public interface IInputDataManager<TData> where TData : IInputData
     IReadOnlyDictionary<int, TData> Data { get; }
 
     event Action<int, TData> DataAdded;
-    event Action<TData> DataChanged;
     event Action<int, TData> DataRemoved;
 
     bool AddData(int key, TData data);
