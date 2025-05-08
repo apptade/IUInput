@@ -3,41 +3,31 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
 namespace IUInput.Screen {
-public sealed class UIInputBreaker : MonoBehaviour
+public abstract class UIInputBreaker<TController, TData> : MonoBehaviour where TController : IInputController where TData : IInputData
 {
-    [SerializeField] private InputManager<ClickInputController, ClickInputData> _clickManager;
-    [SerializeField] private InputManager<MovementInputController, MovementInputData> _movementManager;
-    [SerializeField] private InputManager<PinchInputController, PinchInputData> _pinchManager;
+    [SerializeField] private InputManager<TController, TData> _addableManager;
+    [SerializeField] protected EventSystem _eventSystem;
 
-    [Space]
-    [SerializeField] private EventSystem _eventSystem;
-
-    private UIClickPredicate _clickPredicate;
-    private UIMovementPredicate _movementPredicate;
-    private UIPinchPredicate _pinchPredicate;
+    private UIPredicate<TController> _uIPredicate;
 
     private void Awake()
     {
-        _clickPredicate = new(_eventSystem);
-        _movementPredicate = new(_eventSystem);
-        _pinchPredicate = new(_eventSystem);
+        _uIPredicate = InitializePredicate();
     }
 
     private void OnEnable()
     {
-        if (_clickManager != null) _clickManager.ControllerManager.PredicateManager.AddPredicate(_clickPredicate);
-        if (_movementManager != null) _movementManager.ControllerManager.PredicateManager.AddPredicate(_movementPredicate);
-        if (_pinchManager != null) _pinchManager.ControllerManager.PredicateManager.AddPredicate(_pinchPredicate);
+        _addableManager.ControllerManager.PredicateManager.AddPredicate(_uIPredicate);
     }
 
     private void OnDisable()
     {
-        if (_clickManager != null) _clickManager.ControllerManager.PredicateManager.RemovePredicate(_clickPredicate);
-        if (_movementManager != null) _movementManager.ControllerManager.PredicateManager.RemovePredicate(_movementPredicate);
-        if (_pinchManager != null) _pinchManager.ControllerManager.PredicateManager.RemovePredicate(_pinchPredicate);
+        _addableManager.ControllerManager.PredicateManager.RemovePredicate(_uIPredicate);
     }
 
-    private abstract class UIPredicate<T> : IInputPredicate<T>
+    protected abstract UIPredicate<TController> InitializePredicate();
+
+    protected abstract class UIPredicate<T> : IInputPredicate<T>
     {
         private readonly EventSystem _eventSystem;
         private readonly PointerEventData _memoryPointerEventData;
@@ -50,50 +40,14 @@ public sealed class UIInputBreaker : MonoBehaviour
             _memoryRaycastResult = new();
         }
 
-        public bool Result(T entry)
-        {
-            var position = GetInputPosition(entry);
-            return position.HasValue is false || IsPositionNotOverUI(position.Value);
-        }
+        public abstract bool Result(T entry);
 
-        protected abstract Vector2? GetInputPosition(T entry);
-
-        private bool IsPositionNotOverUI(in Vector2 position)
+        protected bool IsPositionNotOverUI(in Vector2 position)
         {
             _memoryPointerEventData.position = position;
             _eventSystem.RaycastAll(_memoryPointerEventData, _memoryRaycastResult);
 
             return _memoryRaycastResult.Count is 0;
-        }
-    }
-
-    private sealed class UIClickPredicate : UIPredicate<ClickInputController>
-    {
-        public UIClickPredicate(EventSystem eventSystem) : base(eventSystem){}
-
-        protected override Vector2? GetInputPosition(ClickInputController entry)
-        {
-            return entry.SettableDownPosition;
-        }
-    }
-
-    private sealed class UIMovementPredicate : UIPredicate<MovementInputController>
-    {
-        public UIMovementPredicate(EventSystem eventSystem) : base(eventSystem){}
-
-        protected override Vector2? GetInputPosition(MovementInputController entry)
-        {
-            return entry.SettablePosition;
-        }
-    }
-
-    private sealed class UIPinchPredicate : UIPredicate<PinchInputController>
-    {
-        public UIPinchPredicate(EventSystem eventSystem) : base(eventSystem){}
-
-        protected override Vector2? GetInputPosition(PinchInputController entry)
-        {
-            return entry.SettableMiddlePosition;
         }
     }
 }}

@@ -10,14 +10,13 @@ public abstract class ClickInputController : InputController, IDisposable
     private readonly ClickInputData _clickData;
 
     private bool _pressedState;
-    private float _errorMovementCount;
     private float _multipleClickTimer;
     private int _multipleClickCount;
 
-    public bool BlockErrorMovement { get; set; }
-    public float MaxErrorMovementCount { get; set; }
+    public abstract Vector2 PointerPosition { get; }
+
     public float MaxMultipleClickDuration { get; set; }
-    public Vector2? SettableDownPosition { get; private set; }
+    public Vector2? SettableStartPosition { get; private set; }
 
     public ClickInputController(InputAction clickInput, MovementInputData movementData, ClickInputData clickData)
     {
@@ -33,15 +32,15 @@ public abstract class ClickInputController : InputController, IDisposable
 
     public void FixedUpdate()
     {
+        UpdateClickHoldTime();
         UpdateMultipleClickCount();
-        UpdateClickStaticHoldTime();
     }
 
     protected override void OnEnable()
     {
-        _movementData.DeltaChanged += ChangeClickDelta;
-        _movementData.PositionChanged += ChangeClickPosition;
-        _movementData.MovementChanged += ChangeClickMovement;
+        _movementData.Delta.Changed += ChangeDelta;
+        _movementData.Position.Changed += ChangePosition;
+        _movementData.MovementChanged += ChangeMovement;
 
         _clickInput.started += StartClickInput;
         _clickInput.canceled += CancelClickInput;
@@ -50,74 +49,61 @@ public abstract class ClickInputController : InputController, IDisposable
 
     protected override void OnDisable()
     {
-        _movementData.DeltaChanged -= ChangeClickDelta;
-        _movementData.PositionChanged -= ChangeClickPosition;
-        _movementData.MovementChanged -= ChangeClickMovement;
+        _movementData.Delta.Changed -= ChangeDelta;
+        _movementData.Position.Changed -= ChangePosition;
+        _movementData.MovementChanged -= ChangeMovement;
 
         _clickInput.started -= StartClickInput;
         _clickInput.canceled -= CancelClickInput;
         _clickInput.Disable();
     }
 
-    protected abstract Vector2 CurrentPointerPosition();
-
-    private void ChangeClickDelta(Vector2 delta)
+    private void ChangeDelta(Vector2? delta)
     {
-        if (_pressedState)
-        {
-            _errorMovementCount += delta.magnitude;
-            if (CanChangeMovement()) _clickData.OnClickDeltaChanged(delta);
-        }
+        if (_pressedState) _clickData.Delta.Value = delta;
     }
 
-    private void ChangeClickPosition(Vector2 position)
+    private void ChangePosition(Vector2? position)
     {
-        if (_pressedState && CanChangeMovement())
-        {
-            _clickData.OnClickPositionChanged(position);
-        }
+        if (_pressedState) _clickData.Position.Value = position;
     }
 
-    private void ChangeClickMovement(Vector2 delta, Vector2 position)
+    private void ChangeMovement(Vector2 delta, Vector2 position)
     {
-        if (_pressedState && CanChangeMovement())
-        {
-            _clickData.OnClickMovementChanged(delta, position);
-        }
+        if (_pressedState) _clickData.OnClickMovementChanged(delta, position);
     }
 
     private void StartClickInput(InputAction.CallbackContext callback)
     {
-        SettableDownPosition = CurrentPointerPosition();
+        SettableStartPosition = PointerPosition;
 
         if (PredicateManager.AllResult())
         {
             _pressedState = true;
 
-            _clickData.OnClickDownChanged(SettableDownPosition.Value);
-            _clickData.OnClickPositionChanged(SettableDownPosition.Value);
+            _clickData.Pressed.Value = true;
+            _clickData.Position.Value = SettableStartPosition;
+            _clickData.StartPosition.Value = SettableStartPosition;
         }
 
-        SettableDownPosition = null;
+        SettableStartPosition = null;
     }
 
     private void CancelClickInput(InputAction.CallbackContext callback)
     {
         if (_pressedState is false) return;
-        else _clickData.OnClickUpChanged(_movementData.Position);
 
-        if (IsStaticClick())
-        {
-            _multipleClickTimer = 0;
-            _clickData.OnStaticClickChanged(_movementData.Position, _multipleClickCount++);
-        }
+        ChangeStaticClick();
+        _clickData.CancelPosition.Value = _movementData.Position.Value;
 
         _pressedState = false;
-        _errorMovementCount = 0;
 
-        _clickData.OnStaticHoldTimeChanged(0);
-        _clickData.OnClickDeltaChanged(Vector2.zero);
-        _clickData.OnClickPositionChanged(Vector2.zero);
+        _clickData.Pressed.Value = false;
+        _clickData.StartPosition.Value = null;
+        _clickData.CancelPosition.Value = null;
+        _clickData.Position.Value = null;
+        _clickData.Delta.Value = null;
+        _clickData.HoldTime.Value = null;
     }
 
     private void UpdateMultipleClickCount()
@@ -132,29 +118,31 @@ public abstract class ClickInputController : InputController, IDisposable
         }
     }
 
-    private void UpdateClickStaticHoldTime()
+    private void ChangeStaticClick()
+    {
+        if (IsMovementNotChanged() is false) return;
+
+        _multipleClickTimer = 0;
+        _clickData.OnStaticClickChanged(_clickData.Position.Value.Value, _multipleClickCount++);
+    }
+
+    private void UpdateClickHoldTime()
     {
         if (_pressedState is false) return;
 
-        if (IsStaticClick())
+        if (IsMovementNotChanged())
         {
-            var time = _clickData.StaticHoldTime + Time.fixedUnscaledDeltaTime;
-            _clickData.OnStaticHoldTimeChanged(time);
+            var time = _clickData.HoldTime.Value.GetValueOrDefault() + Time.fixedUnscaledDeltaTime;
+            _clickData.HoldTime.Value = time;
         }
-        else if (_clickData.StaticHoldTime is not 0)
+        else if (_clickData.HoldTime.Value is not null)
         {
-            _clickData.OnStaticHoldTimeChanged(0);
+            _clickData.HoldTime.Value = null;
         }
     }
 
-    private bool CanChangeMovement()
+    private bool IsMovementNotChanged()
     {
-        if (BlockErrorMovement is false) return true;
-        else return _errorMovementCount >= MaxErrorMovementCount;
-    }
-
-    private bool IsStaticClick()
-    {
-        return _errorMovementCount <= MaxErrorMovementCount;
+        return Vector2.Distance(_clickData.StartPosition.Value.Value, _clickData.Position.Value.Value) < 0.1f;
     }
 }}

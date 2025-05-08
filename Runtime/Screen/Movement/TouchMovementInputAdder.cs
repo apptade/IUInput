@@ -2,27 +2,28 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 namespace IUInput.Screen {
-public sealed class TouchMovementInputAdder : InputAdder<MovementInputController, MovementInputData>
+public sealed class TouchMovementInputAdder : MovementInputAdder
 {
-    protected override void OnDestroy()
-    {
-        foreach (var controller in Controllers.Values) controller.Dispose();
-        base.OnDestroy();
-    }
-
     protected override IReadOnlyDictionary<int, MovementInputController> GetControllers()
     {
         var supportedFingersCount = 10;
-        var dictionary = new Dictionary<int, MovementInputController>(supportedFingersCount);
+        var source = new Dictionary<int, MovementInputController>(supportedFingersCount);
 
         for (int i = 0; i < supportedFingersCount; i++)
         {
-            var deltaInput = new InputAction(type: InputActionType.Value, binding: $"<Touchscreen>/touch{i}/delta");
-            var positionInput = new InputAction(type: InputActionType.Value, binding: $"<Touchscreen>/touch{i}/position");
+            var deltaInput = new InputAction();
+            deltaInput.AddCompositeBinding("OneModifier")
+                .With("Modifier", $"<Touchscreen>/touch{i}/press")
+                .With("Binding", $"<Touchscreen>/touch{i}/delta");
 
-            dictionary.Add(i, new(deltaInput, positionInput, AddableManager.DataManager.GetData(i)));
+            var positionInput = new InputAction();
+            positionInput.AddCompositeBinding("OneModifier")
+                .With("Modifier", $"<Touchscreen>/touch{i}/press")
+                .With("Binding", $"<Touchscreen>/touch{i}/position");
+
+            source.Add(i, new(deltaInput, positionInput, AddableManager.DataManager.GetData(i)));
         }
 
-        return dictionary;
+        return source;
     }
 }}
