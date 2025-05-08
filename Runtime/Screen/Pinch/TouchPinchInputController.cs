@@ -3,90 +3,106 @@ using UnityEngine;
 namespace IUInput.Screen {
 public sealed class TouchPinchInputController : PinchInputController
 {
-    private readonly ClickInputData _firstClickData;
-    private readonly ClickInputData _secondClickData;
+    private readonly MovementInputData _movementData1;
+    private readonly MovementInputData _movementData2;
 
+    private Vector2? _lastDelta1;
+    private Vector2? _lastDelta2;
+
+    private int _pinchErrorNumber;
     private float _lastPinchDistance;
-    private int _errorPinchNumber;
 
-    public int MaxErrorPinchCount { get; set; } = 3;
-    public float PinchSensitivity { get; set; } = 0.5f;
+    public int MaxPinchErrorCount { get; set; }
+    public float PinchSensitivity { get; set; }
 
-    public TouchPinchInputController(ClickInputData clickData1, ClickInputData clickData2, PinchInputData pinchData) : base(pinchData)
+    public TouchPinchInputController(MovementInputData movementData1, MovementInputData movementData2, PinchInputData pinchData) : base(pinchData)
     {
-        _firstClickData = clickData1;
-        _secondClickData = clickData2;
+        _movementData1 = movementData1;
+        _movementData2 = movementData2;
     }
 
     protected override void OnEnable()
     {
-        _firstClickData.ClickMovementChanged += PerformPinchInput;
-        _firstClickData.ClickUpChanged += CancelPinchInput;
+        _movementData1.MovementChanged += PerformPinchInput;
+        _movementData1.Position.Changed += CancelPinchInput;
 
-        _secondClickData.ClickMovementChanged += PerformPinchInput;
-        _secondClickData.ClickUpChanged += CancelPinchInput;
+        _movementData2.MovementChanged += PerformPinchInput;
+        _movementData2.Position.Changed += CancelPinchInput;
     }
 
     protected override void OnDisable()
     {
-        _firstClickData.ClickMovementChanged -= PerformPinchInput;
-        _firstClickData.ClickUpChanged -= CancelPinchInput;
+        _movementData1.MovementChanged -= PerformPinchInput;
+        _movementData1.Position.Changed -= CancelPinchInput;
 
-        _secondClickData.ClickMovementChanged -= PerformPinchInput;
-        _secondClickData.ClickUpChanged -= CancelPinchInput;
+        _movementData2.MovementChanged -= PerformPinchInput;
+        _movementData2.Position.Changed -= CancelPinchInput;
     }
 
     private void PerformPinchInput(Vector2 delta, Vector2 position)
     {
-        if (CanPinch())
+        if (CanPinch() is false) return;
+
+        var position1 = _movementData1.Position.Value.Value;
+        var position2 = _movementData2.Position.Value.Value;
+        var pinchDistance = Vector2.Distance(position1, position2);
+
+        if (_pinchErrorNumber++ > MaxPinchErrorCount)
         {
-            var position1 = _firstClickData.ClickPosition;
-            var position2 = _secondClickData.ClickPosition;
-            var pinchDistance = Vector2.Distance(position1, position2);
+            var distanceDifference = Mathf.Abs(pinchDistance - _lastPinchDistance);
+            if (distanceDifference < 0.1f) return;
 
-            if (++_errorPinchNumber > MaxErrorPinchCount)
+            var magnitude = delta.magnitude / 10 * PinchSensitivity;
+            SettableValue = pinchDistance > _lastPinchDistance ? magnitude : -magnitude;
+            SettableMiddlePosition = Vector2.Lerp(position1, position2, 0.5f);
+
+            if (PredicateManager.AllResult())
             {
-                SettableValue = pinchDistance > _lastPinchDistance ? PinchSensitivity : -PinchSensitivity;
-                SettableMiddlePosition = Vector2.Lerp(position1, position2, 0.5f);
-
-                if (PredicateManager.AllResult())
-                {
-                    _pinchData.OnPinchValueChanged(SettableValue.Value);
-                    _pinchData.OnPinchMiddlePositionChanged(SettableMiddlePosition.Value);
-                    _pinchData.OnPinchChanged(SettableValue.Value, SettableMiddlePosition.Value);
-                }
+                _pinchData.Pinch.Value = SettableValue;
+                _pinchData.MiddlePosition.Value = SettableMiddlePosition;
+                _pinchData.OnPinchChanged(SettableValue.Value, SettableMiddlePosition.Value);
             }
 
-            _lastPinchDistance = pinchDistance;
+            SettableValue = null;
+            SettableMiddlePosition = null;
         }
 
-        SettableValue = null;
-        SettableMiddlePosition = null;
+        _lastPinchDistance = pinchDistance;
     }
 
-    private void CancelPinchInput(Vector2 position)
+    private void CancelPinchInput(Vector2? position)
     {
-        if (_pinchData.PinchValue is not 0)
+        if (position is null)
         {
-            _pinchData.OnPinchValueChanged(0);
-            _pinchData.OnPinchMiddlePositionChanged(Vector2.zero);
-        }
+            if (_pinchData.Pinch.Value is not null)
+            {
+                _pinchData.Pinch.Value = null;
+                _pinchData.MiddlePosition.Value = null;
+            }
 
-        _errorPinchNumber = 0;
+            _lastDelta1 = null;
+            _lastDelta2 = null;
+            _pinchErrorNumber = 0;
+        }
     }
 
     private bool CanPinch()
     {
-        if (_firstClickData.Pressed is false || _secondClickData.Pressed is false) return false;
+        var result = true;
 
-        var delta1 = _firstClickData.ClickDelta;
-        var delta2 = _secondClickData.ClickDelta;
+        var bothFingersIsActive = _movementData1.Position.Value.HasValue && _movementData2.Position.Value.HasValue;
+        if (bothFingersIsActive is false) return false;
 
-        if (delta1 != Vector2.zero && delta2 != Vector2.zero)
+        if (_lastDelta1 != null && _lastDelta2 != null)
         {
-            if (Vector2.Dot(delta1.normalized, delta2.normalized) > -0.9f) return false;
+            if (Vector2.Dot(_lastDelta1.Value, _lastDelta2.Value) > -0.5f) result = false;
         }
 
-        return true;
+        var delta1 = _movementData1.Delta.Value;
+        var delta2 = _movementData2.Delta.Value;
+        if (delta1 != null) _lastDelta1 = delta1.Value.normalized;
+        if (delta2 != null) _lastDelta2 = delta2.Value.normalized;
+
+        return result;
     }
 }}

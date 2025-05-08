@@ -7,7 +7,7 @@ public sealed class TouchClickInputAdder : ClickInputAdder
     protected override IReadOnlyDictionary<int, ClickInputController> GetControllers()
     {
         var supportedFingersCount = 10;
-        var dictionary = new Dictionary<int, ClickInputController>(supportedFingersCount);
+        var source = new Dictionary<int, ClickInputController>(supportedFingersCount);
 
         for (int i = 0; i < supportedFingersCount; i++)
         {
@@ -15,9 +15,9 @@ public sealed class TouchClickInputAdder : ClickInputAdder
             var clickInput = new InputAction(type: InputActionType.Button, binding: $"<Touchscreen>/touch{i}/press");
             var controller = new TouchClickInputController(clickInput, movementData, pointerId: i, AddableManager.DataManager.GetData(i));
 
-            dictionary.Add(i, controller);
+            source.Add(i, controller);
         }
 
-        return dictionary;
+        return source;
     }
 }}

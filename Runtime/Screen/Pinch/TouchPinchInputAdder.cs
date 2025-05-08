@@ -5,23 +5,31 @@ namespace IUInput.Screen {
 public sealed class TouchPinchInputAdder : InputAdder<PinchInputController, PinchInputData>
 {
     [SerializeField]
-    private InputManager<ClickInputController, ClickInputData> _clickManager;
+    private InputManager<MovementInputController, MovementInputData> _movementManager;
+
+    [Space]
+    [SerializeField, Range(1, 10)] private int _maxPinchErrorCount;
+    [SerializeField, Range(0.05f, 1)] private float _pinchSensitivity;
 
     protected override IReadOnlyDictionary<int, PinchInputController> GetControllers()
     {
         var supportedFingersCount = 10;
-        var dictionary = new Dictionary<int, PinchInputController>(supportedFingersCount / 2);
+        var source = new Dictionary<int, PinchInputController>(supportedFingersCount / 2);
 
         for (int i = 0, a = 0; i < supportedFingersCount; i += 2, a++)
         {
-            dictionary.Add(a, new TouchPinchInputController
+            source.Add(a, new TouchPinchInputController
             (
-                _clickManager.DataManager.GetData(i),
-                _clickManager.DataManager.GetData(i + 1),
+                _movementManager.DataManager.GetData(i),
+                _movementManager.DataManager.GetData(i + 1),
                 AddableManager.DataManager.GetData(a)
-            ));
+            )
+            {
+                MaxPinchErrorCount = _maxPinchErrorCount,
+                PinchSensitivity = _pinchSensitivity
+            });
         }
 
-        return dictionary;
+        return source;
     }
 }}

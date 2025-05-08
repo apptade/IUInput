@@ -1,5 +1,5 @@
 namespace IUInput {
-public interface IInputPredicate
+public interface IPredicate
 {
     bool Result();
 }}

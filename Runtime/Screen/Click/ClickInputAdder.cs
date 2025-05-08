@@ -6,10 +6,8 @@ public abstract class ClickInputAdder : InputAdder<ClickInputController, ClickIn
     [SerializeField]
     protected InputManager<MovementInputController, MovementInputData> _movementManager;
 
-    [Space]
-    [SerializeField] protected bool _blockErrorMovement;
-    [SerializeField, Range(0, 25)] protected float _maxErrorMovementCount;
-    [SerializeField, Range(0.1f, 1)] protected float _maxMultipleClickDuration;
+    [SerializeField, Space, Range(0.1f, 1)]
+    protected float _maxMultipleClickDuration;
 
     protected override void Awake()
     {
@@ -19,13 +17,8 @@ public abstract class ClickInputAdder : InputAdder<ClickInputController, ClickIn
 
     protected override void OnDestroy()
     {
-        foreach (var controller in Controllers.Values) controller.Dispose();
         base.OnDestroy();
-    }
-
-    protected virtual void OnValidate()
-    {
-        UpdateControllersSettings();
+        foreach (var controller in Controllers.Values) controller.Dispose();
     }
 
     protected virtual void FixedUpdate()
@@ -35,12 +28,8 @@ public abstract class ClickInputAdder : InputAdder<ClickInputController, ClickIn
 
     protected virtual void UpdateControllersSettings()
     {
-        if (Controllers is null) return;
-
         foreach (var controller in Controllers.Values)
         {
-            controller.BlockErrorMovement = _blockErrorMovement;
-            controller.MaxErrorMovementCount = _maxErrorMovementCount;
             controller.MaxMultipleClickDuration = _maxMultipleClickDuration;
         }
     }

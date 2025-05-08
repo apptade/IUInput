@@ -5,7 +5,6 @@ namespace IUInput {
 public interface IInputControllerManager<TController> where TController : IInputController
 {
     IReadOnlyDictionary<int, IReadOnlyList<TController>> Controllers { get; }
-    IInputPredicateManager<TController> PredicateManager { get; }
 
     event Action<int, TController> ControllerAdded;
     event Action<int, TController> ControllerRemoved;

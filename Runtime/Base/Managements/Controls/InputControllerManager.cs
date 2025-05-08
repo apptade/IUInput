@@ -5,10 +5,7 @@ namespace IUInput {
 public sealed class InputControllerManager<TController> : IInputControllerManager<TController> where TController : IInputController
 {
     private readonly Dictionary<int, IReadOnlyList<TController>> _controllers;
-    private readonly InputControllerPredicateConnector<TController> _connector;
-
     public IReadOnlyDictionary<int, IReadOnlyList<TController>> Controllers { get => _controllers; }
-    public IInputPredicateManager<TController> PredicateManager { get; }
 
     public event Action<int, TController> ControllerAdded;
     public event Action<int, TController> ControllerRemoved;
@@ -16,10 +13,6 @@ public sealed class InputControllerManager<TController> : IInputControllerManage
     public InputControllerManager()
     {
         _controllers = new();
-        _connector = new(this);
-        PredicateManager = new InputPredicateManager<TController>();
-
-        _connector.Enable();
     }
 
     public bool AddController(int key, TController controller)

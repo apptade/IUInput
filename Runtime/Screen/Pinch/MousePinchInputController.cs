@@ -34,12 +34,12 @@ public sealed class MousePinchInputController : PinchInputController, IDisposabl
     private void PerformPinchInput(InputAction.CallbackContext callback)
     {
         SettableValue = callback.ReadValue<Vector2>().y;
-        SettableMiddlePosition = Mouse.current.position.ReadValue();
+        SettableMiddlePosition = Mouse.current.position.value;
 
         if (PredicateManager.AllResult())
         {
-            _pinchData.OnPinchValueChanged(SettableValue.Value);
-            _pinchData.OnPinchMiddlePositionChanged(SettableMiddlePosition.Value);
+            _pinchData.Pinch.Value = SettableValue;
+            _pinchData.MiddlePosition.Value = SettableMiddlePosition;
             _pinchData.OnPinchChanged(SettableValue.Value, SettableMiddlePosition.Value);
         }
 
@@ -49,10 +49,10 @@ public sealed class MousePinchInputController : PinchInputController, IDisposabl
 
     private void CancelPinchInput(InputAction.CallbackContext callback)
     {
-        if (_pinchData.PinchValue is not 0)
+        if (_pinchData.Pinch.Value is not null)
         {
-            _pinchData.OnPinchValueChanged(0);
-            _pinchData.OnPinchMiddlePositionChanged(Vector2.zero);
+            _pinchData.Pinch.Value = null;
+            _pinchData.MiddlePosition.Value = null;
         }
     }
 }}

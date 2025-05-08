@@ -2,7 +2,7 @@ namespace IUInput {
 public interface IInputController
 {
     bool Enabled { get; }
-    IInputPredicateManager PredicateManager { get; }
+    IPredicateManager PredicateManager { get; }
 
     void Disable();
     void Enable();

@@ -7,7 +7,7 @@ public sealed class MovementInputController : InputController, IDisposable
 {
     private readonly InputAction _deltaInput;
     private readonly InputAction _positionInput;
-    private readonly MovementInputData _movementData;
+    public readonly MovementInputData MovementData;
 
     public Vector2? SettableDelta { get; private set; }
     public Vector2? SettablePosition { get; private set; }
@@ -16,7 +16,7 @@ public sealed class MovementInputController : InputController, IDisposable
     {
         _deltaInput = deltaInput;
         _positionInput = positionInput;
-        _movementData = movementData;
+        MovementData = movementData;
     }
 
     public void Dispose()
@@ -31,6 +31,7 @@ public sealed class MovementInputController : InputController, IDisposable
         _deltaInput.performed += PerformDeltaInput;
         _deltaInput.Enable();
 
+        _positionInput.canceled += CancelPositionInput;
         _positionInput.performed += PerformPositionInput;
         _positionInput.Enable();
     }
@@ -41,6 +42,7 @@ public sealed class MovementInputController : InputController, IDisposable
         _deltaInput.performed -= PerformDeltaInput;
         _deltaInput.Disable();
 
+        _positionInput.canceled -= CancelPositionInput;
         _positionInput.performed -= PerformPositionInput;
         _positionInput.Disable();
     }
@@ -51,7 +53,7 @@ public sealed class MovementInputController : InputController, IDisposable
 
         if (PredicateManager.AllResult())
         {
-            _movementData.OnDeltaChanged(SettableDelta.Value);
+            MovementData.Delta.Value = SettableDelta;
         }
 
         SettableDelta = null;
@@ -59,10 +61,10 @@ public sealed class MovementInputController : InputController, IDisposable
 
     private void CancelDeltaInput(InputAction.CallbackContext callback)
     {
-        if (_movementData.Delta != Vector2.zero)
+        if (MovementData.Delta.Value.HasValue)
         {
-            _movementData.OnMovementChanged(_movementData.Delta, _movementData.Position);
-            _movementData.OnDeltaChanged(Vector2.zero);
+            MovementData.OnMovementChanged(MovementData.Delta.Value.Value, MovementData.Position.Value.Value);
+            MovementData.Delta.Value = null;
         }
     }
 
@@ -72,9 +74,17 @@ public sealed class MovementInputController : InputController, IDisposable
 
         if (PredicateManager.AllResult())
         {
-            _movementData.OnPositionChanged(SettablePosition.Value);
+            MovementData.Position.Value = SettablePosition;
         }
 
         SettablePosition = null;
+    }
+
+    private void CancelPositionInput(InputAction.CallbackContext callback)
+    {
+        if (MovementData.Position.Value.HasValue)
+        {
+            MovementData.Position.Value = null;
+        }
     }
 }}

@@ -4,11 +4,11 @@ public abstract class InputController : IInputController
     private bool _enabled;
 
     public bool Enabled { get => _enabled; }
-    public IInputPredicateManager PredicateManager { get; }
+    public IPredicateManager PredicateManager { get; }
 
     public InputController()
     {
-        PredicateManager = new InputPredicateManager();
+        PredicateManager = new PredicateManager();
     }
 
     public void Disable()
