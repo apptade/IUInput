@@ -1,0 +1,18 @@
+{
+    "name": "com.apptade.iuinput",
+    "version": "0.3.0",
+    "displayName": "IUInput",
+    "description": "Is fast and extensionally Input System for Unity engine",
+    "unity": "2021.3",
+    "documentationUrl": "https://github.com/apptade/IUInput/blob/main/README.md",
+    "changelogUrl": "https://github.com/apptade/IUInput/releases",
+    "licensesUrl": "https://github.com/apptade/IUInput/blob/main/LICENSE.md",
+    "dependencies": {
+      "com.unity.inputsystem": "1.14.0"
+   },
+    "author": {
+      "name": "apptade",
+      "email": "apptade64@gmail.com",
+      "url": "https://github.com/apptade"
+    }
+}
