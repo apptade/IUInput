@@ -31,10 +31,10 @@ public sealed class ContactInputController : InputController, IDisposable
                 AdditionalStartAction = () => _contactData.Pressed.Value = true,
                 AdditionalCancelAction = () => _contactData.Pressed.Value = false
             },
-            new(holdInput, this, contactData.Hold),
+            new(holdInput, this, contactData.Hold) { AdditionalPerformPredicate = IsStaticContact },
             new(multiTapInput, this, contactData.MultiTap),
-            new(slowTapInput, this, contactData.SlowTap),
-            new(tapInput, this, contactData.Tap),
+            new(slowTapInput, this, contactData.SlowTap) { AdditionalPerformPredicate = IsStaticContact },
+            new(tapInput, this, contactData.Tap) { AdditionalPerformPredicate = IsStaticContact },
         };
     }
 
@@ -53,6 +53,18 @@ public sealed class ContactInputController : InputController, IDisposable
         foreach (var handler in _handlers) handler.Disable();
     }
 
+    private bool IsStaticContact(ContactHandler contactHandler)
+    {
+        var nullablePosition = _movementData.Position.Value;
+
+        if (nullablePosition.HasValue)
+        {
+            return Vector2.Distance(contactHandler.StartPosition, nullablePosition.Value) < 0.1f;
+        }
+
+        return true;
+    }
+
     private sealed class ContactHandler : InputActionHandler
     {
         private readonly ContactInputController _controller;
@@ -60,6 +72,7 @@ public sealed class ContactInputController : InputController, IDisposable
 
         public Action AdditionalStartAction { get; set; }
         public Action AdditionalCancelAction { get; set; }
+        public Predicate<ContactHandler> AdditionalPerformPredicate { get; set; }
 
         public bool Pressed { get; private set; }
         public Vector2 StartPosition { get; private set; }
@@ -97,7 +110,7 @@ public sealed class ContactInputController : InputController, IDisposable
 
         protected override void PerformInput(InputAction.CallbackContext context)
         {
-            if (Pressed && IsMovementNotChanged())
+            if (Pressed && AdditionalPerformPredicate?.Invoke(this) is true or null)
             {
                 _controller.SettablePosition = _controller.CurrentPosition();
 
@@ -109,18 +122,6 @@ public sealed class ContactInputController : InputController, IDisposable
 
                 _controller.SettablePosition = null;
             }
-        }
-
-        private bool IsMovementNotChanged()
-        {
-            var nullablePosition = _controller._movementData.Position.Value;
-
-            if (nullablePosition.HasValue)
-            {
-                return Vector2.Distance(StartPosition, nullablePosition.Value) < 0.1f;
-            }
-
-            return true;
         }
     }
 }}
