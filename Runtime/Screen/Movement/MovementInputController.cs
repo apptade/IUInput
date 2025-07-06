@@ -78,12 +78,13 @@ public sealed class MovementInputController : InputController, IDisposable
     {
         SettablePosition = context.ReadValue<Vector2>();
         if (PredicateManager.AllResult()) _movementData.Position.OnStarted(SettablePosition);
-        SettablePosition = null;
     }
 
     private void CancelPositionInput(InputAction.CallbackContext context)
     {
         _movementErrorNumber = 0;
+        SettablePosition = null;
+
         if (_movementData.Position.Value.HasValue)
         {
             _movementData.Position.OnCanceled(_movementData.Position.Value);
@@ -100,8 +101,6 @@ public sealed class MovementInputController : InputController, IDisposable
             _movementData.Position.OnPerformed(SettablePosition);
             ChangeMovement();
         }
-
-        SettablePosition = null;
     }
 
     private bool IsCanMove()
