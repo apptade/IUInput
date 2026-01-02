@@ -10,7 +10,7 @@ public sealed class MouseMovementInputAdder : MovementInputAdder
     protected override void AddFirstControllers()
     {
         CreateInputActions(out var deltaInput, out var positionInput);
-        _controllerManager.AddValue(0, new(deltaInput, positionInput, _addableManager.DataManager.GetData(0)));
+        _controllerManager.Add(0, new(deltaInput, positionInput, _addableManager.DataManager.GetOrCreateData(0)));
     }
 
     private void CreateInputActions(out InputAction deltaInput, out InputAction positionInput)

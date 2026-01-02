@@ -1,9 +1,7 @@
 namespace IUInput {
 public abstract class InputController : IInputController
 {
-    private bool _enabled;
-
-    public bool Enabled { get => _enabled; }
+    public bool Enabled { get; private set; }
     public IInputPredicateManager PredicateManager { get; }
 
     public InputController()
@@ -11,20 +9,22 @@ public abstract class InputController : IInputController
         PredicateManager = new InputPredicateManager();
     }
 
-    public void Disable()
+    public bool Disable()
     {
-        if (!_enabled) return;
+        if (!Enabled) return false;
 
-        _enabled = false;
+        Enabled = false;
         OnDisable();
+        return true;
     }
 
-    public void Enable()
+    public bool Enable()
     {
-        if (_enabled) return;
+        if (Enabled) return false;
 
-        _enabled = true;
+        Enabled = true;
         OnEnable();
+        return true;
     }
 
     protected abstract void OnDisable();

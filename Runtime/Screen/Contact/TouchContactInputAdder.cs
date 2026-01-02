@@ -12,11 +12,11 @@ public sealed class TouchContactInputAdder : ContactInputAdder
         for (int i = 0; i < _supportedFingersCount; i++)
         {
             var binding = $"<Touchscreen>/touch{i}/press";
-            var contactData = _addableManager.DataManager.GetData(i);
-            var movementData = _movementManager.DataManager.GetData(i);
+            var contactData = _addableManager.DataManager.GetOrCreateData(i);
+            var movementData = _movementManager.DataManager.GetOrCreateData(i);
 
             var id = i;
-            _controllerManager.AddValue(i, new(binding, contactData, movementData, () => GetCurrentPosition(id)));
+            _controllerManager.Add(i, new(binding, contactData, movementData, () => GetCurrentPosition(id)));
         }
     }
 

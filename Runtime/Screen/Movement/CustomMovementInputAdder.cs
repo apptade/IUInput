@@ -17,7 +17,7 @@ public sealed class CustomMovementInputAdder : MovementInputAdder
         for (int i = 0; i < length; i++)
         {
             var input = _customInputs[i];
-            _controllerManager.AddValue(i, new(input.DeltaInput, input.PositionInput, _addableManager.DataManager.GetData(i)));
+            _controllerManager.Add(i, new(input.DeltaInput, input.PositionInput, _addableManager.DataManager.GetOrCreateData(i)));
         }
     }
 

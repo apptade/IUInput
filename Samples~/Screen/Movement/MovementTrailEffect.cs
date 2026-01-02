@@ -9,14 +9,14 @@ public sealed class MovementTrailEffect : MonoBehaviour
 
     private void OnEnable()
     {
-        _movementManager.DataManager.GetData(_movementDataKey).Position.Started += TeleportTrail;
-        _movementManager.DataManager.GetData(_movementDataKey).Position.Performed += MoveTrail;
+        _movementManager.DataManager.GetOrCreateData(_movementDataKey).Position.Started += TeleportTrail;
+        _movementManager.DataManager.GetOrCreateData(_movementDataKey).Position.Performed += MoveTrail;
     }
 
     private void OnDisable()
     {
-        _movementManager.DataManager.GetData(_movementDataKey).Position.Started -= TeleportTrail;
-        _movementManager.DataManager.GetData(_movementDataKey).Position.Performed -= MoveTrail;
+        _movementManager.DataManager.GetOrCreateData(_movementDataKey).Position.Started -= TeleportTrail;
+        _movementManager.DataManager.GetOrCreateData(_movementDataKey).Position.Performed -= MoveTrail;
     }
 
     private void TeleportTrail(Vector2? position)
@@ -30,7 +30,7 @@ public sealed class MovementTrailEffect : MonoBehaviour
         _trail.transform.position = ScreenToWorldPosition(position.Value);
     }
 
-    private Vector2 ScreenToWorldPosition(in Vector2 screenPosition)
+    private Vector2 ScreenToWorldPosition(Vector2 screenPosition)
     {
         return Camera.main.ScreenToWorldPoint(screenPosition);
     }

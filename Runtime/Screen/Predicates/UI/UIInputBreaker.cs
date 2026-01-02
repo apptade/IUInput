@@ -15,14 +15,14 @@ public abstract class UIInputBreaker<TController, TData> : MonoBehaviour where T
         _predicates = new();
         AddFirstPredicates();
 
-        _addableManager.ControllerManager.ValueAdded += AddPredicate;
-        _addableManager.ControllerManager.ValueRemoved += RemovePredicate;
+        _addableManager.ControllerManager.ItemAdded += AddPredicate;
+        _addableManager.ControllerManager.ItemRemoved += RemovePredicate;
     }
 
     private void OnDestroy()
     {
-        _addableManager.ControllerManager.ValueAdded -= AddPredicate;
-        _addableManager.ControllerManager.ValueRemoved -= RemovePredicate;
+        _addableManager.ControllerManager.ItemAdded -= AddPredicate;
+        _addableManager.ControllerManager.ItemRemoved -= RemovePredicate;
     }
 
     private void AddFirstPredicates()
@@ -47,7 +47,7 @@ public abstract class UIInputBreaker<TController, TData> : MonoBehaviour where T
             var predicate = CreatePredicate(controller);
             if (source.TryAdd(controller, predicate))
             {
-                controller.PredicateManager.AddValue(predicate);
+                controller.PredicateManager.Add(predicate);
             }
         }
     }
@@ -58,7 +58,7 @@ public abstract class UIInputBreaker<TController, TData> : MonoBehaviour where T
         {
             if (source.Remove(controller, out var predicate))
             {
-                controller.PredicateManager.RemoveValue(predicate);
+                controller.PredicateManager.Remove(predicate);
             }
         }
     }

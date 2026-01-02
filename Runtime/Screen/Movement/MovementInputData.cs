@@ -9,7 +9,7 @@ public sealed class MovementInputData : IInputData
 
     public event Action<Vector2, Vector2> MovementChanged;
 
-    public void OnMovementChanged(in Vector2 delta, in Vector2 position)
+    public void OnMovementChanged(Vector2 delta, Vector2 position)
     {
         MovementChanged?.Invoke(delta, position);
     }

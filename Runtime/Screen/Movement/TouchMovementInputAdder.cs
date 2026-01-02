@@ -17,7 +17,7 @@ public sealed class TouchMovementInputAdder : MovementInputAdder
                 .With("Modifier", $"<Touchscreen>/touch{i}/press")
                 .With("Binding", $"<Touchscreen>/touch{i}/position");
 
-            _controllerManager.AddValue(i, new(deltaInput, positionInput, _addableManager.DataManager.GetData(i)));
+            _controllerManager.Add(i, new(deltaInput, positionInput, _addableManager.DataManager.GetOrCreateData(i)));
         }
     }
 }}

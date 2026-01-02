@@ -9,7 +9,7 @@ public sealed class PinchInputData : IInputData
 
     public event Action<float, Vector2> PinchChanged;
 
-    public void OnPinchChanged(in float value, in Vector2 middlePosition)
+    public void OnPinchChanged(float value, Vector2 middlePosition)
     {
         PinchChanged?.Invoke(value, middlePosition);
     }

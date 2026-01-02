@@ -15,7 +15,7 @@ public sealed class MousePinchInputAdder : InputAdder<PinchInputController, Pinc
 
         for (int i = 0; i < scrollInputs.Count; i++)
         {
-            _controllerManager.AddValue(i, new MousePinchInputController(scrollInputs[i], _addableManager.DataManager.GetData(i)));
+            _controllerManager.Add(i, new MousePinchInputController(scrollInputs[i], _addableManager.DataManager.GetOrCreateData(i)));
         }
     }
 

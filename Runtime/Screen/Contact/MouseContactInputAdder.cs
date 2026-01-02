@@ -10,10 +10,10 @@ public sealed class MouseContactInputAdder : ContactInputAdder
 
         for (int i = 0; i < bindings.Length; i++)
         {
-            var contactData = _addableManager.DataManager.GetData(i);
-            var movementData = _movementManager.DataManager.GetData(0);
+            var contactData = _addableManager.DataManager.GetOrCreateData(i);
+            var movementData = _movementManager.DataManager.GetOrCreateData(0);
 
-            _controllerManager.AddValue(i, new(bindings[i], contactData, movementData, GetCurrentPosition));
+            _controllerManager.Add(i, new(bindings[i], contactData, movementData, GetCurrentPosition));
         }
     }
 

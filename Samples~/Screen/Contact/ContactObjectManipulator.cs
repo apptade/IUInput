@@ -9,18 +9,18 @@ public sealed class ContactObjectManipulator : MonoBehaviour
 
     private void OnEnable()
     {
-        _contactManager.DataManager.GetData(_contactDataKey).Hold.Performed += ChangeToWhiteColor;
-        _contactManager.DataManager.GetData(_contactDataKey).MultiTap.Performed += RandomizeColor;
-        _contactManager.DataManager.GetData(_contactDataKey).SlowTap.Performed += RandomizeScale;
-        _contactManager.DataManager.GetData(_contactDataKey).Tap.Performed += RandomizeRotation;
+        _contactManager.DataManager.GetOrCreateData(_contactDataKey).Hold.Performed += ChangeToWhiteColor;
+        _contactManager.DataManager.GetOrCreateData(_contactDataKey).MultiTap.Performed += RandomizeColor;
+        _contactManager.DataManager.GetOrCreateData(_contactDataKey).SlowTap.Performed += RandomizeScale;
+        _contactManager.DataManager.GetOrCreateData(_contactDataKey).Tap.Performed += RandomizeRotation;
     }
 
     private void OnDisable()
     {
-        _contactManager.DataManager.GetData(_contactDataKey).Hold.Performed -= ChangeToWhiteColor;
-        _contactManager.DataManager.GetData(_contactDataKey).MultiTap.Performed -= RandomizeColor;
-        _contactManager.DataManager.GetData(_contactDataKey).SlowTap.Performed -= RandomizeScale;
-        _contactManager.DataManager.GetData(_contactDataKey).Tap.Performed -= RandomizeRotation;
+        _contactManager.DataManager.GetOrCreateData(_contactDataKey).Hold.Performed -= ChangeToWhiteColor;
+        _contactManager.DataManager.GetOrCreateData(_contactDataKey).MultiTap.Performed -= RandomizeColor;
+        _contactManager.DataManager.GetOrCreateData(_contactDataKey).SlowTap.Performed -= RandomizeScale;
+        _contactManager.DataManager.GetOrCreateData(_contactDataKey).Tap.Performed -= RandomizeRotation;
     }
 
     private void ChangeToWhiteColor(Vector2? position)

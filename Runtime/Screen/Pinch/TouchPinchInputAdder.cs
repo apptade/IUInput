@@ -15,11 +15,11 @@ public sealed class TouchPinchInputAdder : InputAdder<PinchInputController, Pinc
     {
         for (int i = 0, a = 0; a < _maxPinchFingersCount; i += 2, a++)
         {
-            _controllerManager.AddValue(a, new TouchPinchInputController
+            _controllerManager.Add(a, new TouchPinchInputController
             (
-                _movementManager.DataManager.GetData(i),
-                _movementManager.DataManager.GetData(i + 1),
-                _addableManager.DataManager.GetData(a)
+                _movementManager.DataManager.GetOrCreateData(i),
+                _movementManager.DataManager.GetOrCreateData(i + 1),
+                _addableManager.DataManager.GetOrCreateData(a)
             )
             {
                 MaxPinchErrorCount = _maxPinchErrorCount,

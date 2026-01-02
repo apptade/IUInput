@@ -1,6 +1,6 @@
 {
     "name": "com.apptade.iuinput",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "displayName": "IUInput",
     "description": "Is fast and extensionally Input system for Unity engine.",
     "unity": "2021.3",

@@ -1,38 +1,23 @@
-using System;
-
 namespace IUInput {
 public static class InputControllerManagerExtension
 {
     public static void DisableAllControllers<T>(this IInputControllerManager<T> manager) where T : IInputController
     {
-        foreach (var controllers in manager.Controllers.Values)
+        manager.ForEach(DisableNow);
+
+        static void DisableNow(int key, T controller)
         {
-            foreach (var controller in controllers)
-            {
-                controller.Disable();
-            }
+            controller.Disable();
         }
     }
 
     public static void EnableAllControllers<T>(this IInputControllerManager<T> manager) where T : IInputController
     {
-        foreach (var controllers in manager.Controllers.Values)
-        {
-            foreach (var controller in controllers)
-            {
-                controller.Enable();
-            }
-        }
-    }
+        manager.ForEach(EnableNow);
 
-    public static void ForEachController<T>(this IInputControllerManager<T> manager, Action<T> action) where T : IInputController
-    {
-        foreach (var controllers in manager.Controllers.Values)
+        static void EnableNow(int key, T controller)
         {
-            foreach (var controller in controllers)
-            {
-                action(controller);
-            }
+            controller.Enable();
         }
     }
 }}
